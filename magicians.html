@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magicians — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0b0e; --gold: #c9a84c; --gold-dim: #8a6f2e; --cream: #f5f0e8;
+      --cream-dim: #e8e0d0; --muted: #6b6460; --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18); --online: #3ecf8e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink); color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky; top: 0; background: rgba(13,11,14,0.94);
+      backdrop-filter: blur(14px); z-index: 100;
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--cream); text-decoration: none; }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 12px; color: var(--muted); text-decoration: none; letter-spacing: 0.07em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a.active { color: var(--cream); }
+    .nav-right { display: flex; gap: 10px; }
+    .btn-ghost { font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); border: 0.5px solid var(--gold-dim); background: none; padding: 7px 16px; border-radius: 2px; cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s; }
+    .btn-ghost:hover { background: var(--gold); color: var(--ink); }
+    .btn-solid { font-family: 'DM Sans', sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--gold); border: none; padding: 7px 16px; border-radius: 2px; cursor: pointer; text-decoration: none; transition: opacity 0.2s; }
+    .btn-solid:hover { opacity: 0.85; }
+
+    /* PAGE HEADER */
+    .page-header { padding: 52px 48px 36px; border-bottom: 0.5px solid rgba(201,168,76,0.1); }
+    .page-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--cream); line-height: 1; margin-bottom: 8px; }
+    .page-title em { font-style: italic; color: var(--gold); }
+    .page-sub { font-size: 13px; color: var(--muted); }
+
+    /* FILTERS */
+    .filters {
+      display: flex; align-items: center; gap: 10px;
+      padding: 18px 48px; border-bottom: 0.5px solid rgba(201,168,76,0.1); flex-wrap: wrap;
+    }
+    .filter-input {
+      background: rgba(255,255,255,0.04); border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 2px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 300; padding: 8px 13px; outline: none;
+      transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+    }
+    .filter-input:focus { border-color: rgba(201,168,76,0.5); }
+    .filter-input::placeholder { color: var(--muted); }
+    select.filter-input {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer;
+    }
+    select.filter-input option { background: #1a1520; color: var(--cream); }
+    .filter-sep { width: 0.5px; height: 24px; background: rgba(201,168,76,0.15); }
+    .result-count { font-size: 12px; color: var(--muted); }
+
+    /* ONLINE FILTER */
+    .online-filter {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--muted); cursor: pointer;
+      padding: 7px 13px; border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 2px; background: rgba(255,255,255,0.04);
+      transition: all 0.15s; user-select: none; margin-left: auto;
+    }
+    .online-filter.active { background: rgba(62,207,142,0.08); border-color: rgba(62,207,142,0.3); color: var(--online); }
+    .online-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.15s; }
+    .online-filter.active .online-pip { background: var(--online); }
+
+    /* MAIN LAYOUT */
+    .main-layout { display: grid; grid-template-columns: 1fr 260px; gap: 0; }
+
+    /* MAGICIAN GRID */
+    .grid-col { padding: 32px 48px; border-right: 0.5px solid rgba(201,168,76,0.08); }
+    .mag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+
+    /* MAGICIAN CARD */
+    .mag-card {
+      background: var(--card-bg); border: 0.5px solid var(--card-border);
+      border-radius: 3px; overflow: hidden; cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s; text-decoration: none; display: block;
+    }
+    .mag-card:hover { border-color: rgba(201,168,76,0.5); transform: translateY(-3px); }
+    .mag-card-img {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px; position: relative;
+    }
+    .c1  { background: linear-gradient(135deg,#1a1020,#2d1f3d); }
+    .c2  { background: linear-gradient(135deg,#0f1a20,#1a3040); }
+    .c3  { background: linear-gradient(135deg,#1a1510,#3d2a0f); }
+    .c4  { background: linear-gradient(135deg,#101a15,#0f3020); }
+    .c5  { background: linear-gradient(135deg,#1a1020,#1a0f20); }
+    .c6  { background: linear-gradient(135deg,#0d1520,#152030); }
+    .c7  { background: linear-gradient(135deg,#150d20,#251540); }
+    .c8  { background: linear-gradient(135deg,#0f180d,#1a2f10); }
+    .c9  { background: linear-gradient(135deg,#1a1008,#302008); }
+    .c10 { background: linear-gradient(135deg,#200f0f,#3d1515); }
+    .c11 { background: linear-gradient(135deg,#0d1a1a,#0f3030); }
+    .c12 { background: linear-gradient(135deg,#1a0d1a,#2d152d); }
+    .online-badge {
+      position: absolute; top: 10px; right: 10px;
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(13,11,14,0.8); padding: 3px 9px;
+      border-radius: 99px; font-size: 10px; color: var(--online);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--online); flex-shrink: 0; }
+    .last-seen {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(13,11,14,0.75); padding: 3px 9px;
+      border-radius: 99px; font-size: 10px; color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .mag-card-body { padding: 14px 16px 16px; }
+    .mag-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--cream); margin-bottom: 2px; }
+    .mag-location { font-size: 11px; color: var(--muted); margin-bottom: 9px; }
+    .mag-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .mag-tag { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-dim); border: 0.5px solid rgba(138,111,46,0.4); padding: 2px 8px; border-radius: 1px; }
+    .mag-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 0.5px solid rgba(255,255,255,0.06); }
+    .mag-rating { font-size: 13px; color: var(--gold); }
+    .mag-reviews { font-size: 11px; color: var(--muted); }
+
+    /* EMPTY STATE */
+    .empty-state { display: none; padding: 60px 0; text-align: center; grid-column: 1/-1; }
+    .empty-state.visible { display: block; }
+    .empty-icon  { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--cream); margin-bottom: 6px; }
+    .empty-sub   { font-size: 13px; color: var(--muted); }
+
+    /* SIDEBAR */
+    .sidebar-col { padding: 32px 24px; }
+    .sb-section { margin-bottom: 28px; }
+    .sb-title { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 0.5px solid rgba(201,168,76,0.12); }
+
+    /* specialty tags sidebar */
+    .spec-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .spec-tag {
+      font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--muted); border: 0.5px solid rgba(201,168,76,0.18);
+      padding: 4px 11px; border-radius: 1px; cursor: pointer;
+      transition: all 0.15s; user-select: none;
+    }
+    .spec-tag:hover { border-color: rgba(201,168,76,0.4); color: var(--cream); }
+    .spec-tag.active { background: rgba(201,168,76,0.1); border-color: var(--gold); color: var(--gold); }
+
+    /* city list */
+    .city-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 0; border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .city-row:hover { opacity: 0.8; }
+    .city-row:last-child { border-bottom: none; }
+    .city-name  { font-size: 13px; color: var(--cream); }
+    .city-count { font-size: 11px; color: var(--muted); }
+
+    /* join cta */
+    .join-cta { background: rgba(201,168,76,0.05); border: 0.5px solid rgba(201,168,76,0.2); border-radius: 3px; padding: 20px; }
+    .join-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--cream); margin-bottom: 8px; }
+    .join-body  { font-size: 12px; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+    .join-btn {
+      display: block; width: 100%; font-family: 'DM Sans', sans-serif;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink); background: var(--gold); border: none;
+      padding: 10px; border-radius: 2px; cursor: pointer; text-align: center;
+      text-decoration: none; transition: opacity 0.2s;
+    }
+    .join-btn:hover { opacity: 0.85; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar-col { display: none; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .page-header { padding: 36px 20px 24px; }
+      .filters { padding: 14px 20px; }
+      .grid-col { padding: 24px 20px; }
+      .mag-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="magicians.html">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="signin.html" class="btn-ghost">Sign in</a>
+      <a href="create-profile.html" class="btn-solid">Create profile</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-eyebrow">The performers</div>
+    <h1 class="page-title">Browse <em>magicians</em></h1>
+    <p class="page-sub" id="page-sub">2,400+ magicians across the US — find the perfect performer for any occasion</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <input class="filter-input" type="text" id="search-input" placeholder="Search by name or location…" style="width:220px;" oninput="applyFilters()">
+    <div class="filter-sep"></div>
+    <select class="filter-input" id="filter-city" onchange="applyFilters()">
+      <option value="">All cities</option>
+      <option value="Los Angeles">Los Angeles</option>
+      <option value="New York">New York</option>
+      <option value="Chicago">Chicago</option>
+      <option value="Seattle">Seattle</option>
+      <option value="Las Vegas">Las Vegas</option>
+    </select>
+    <select class="filter-input" id="filter-style" onchange="applyFilters()">
+      <option value="">Any style</option>
+      <option value="Mentalism">Mentalism</option>
+      <option value="Close-up">Close-up magic</option>
+      <option value="Stage">Stage illusions</option>
+      <option value="Comedy">Comedy magic</option>
+      <option value="Escape">Escape artistry</option>
+      <option value="Card">Card magic</option>
+    </select>
+    <select class="filter-input" id="filter-avail" onchange="applyFilters()">
+      <option value="">Any booking</option>
+      <option value="Corporate">Corporate events</option>
+      <option value="Private">Private parties</option>
+      <option value="Theater">Theater / stage</option>
+      <option value="Wedding">Weddings</option>
+    </select>
+    <span class="result-count" id="result-count">12 magicians</span>
+    <div class="online-filter" id="online-filter" onclick="toggleOnline()">
+      <div class="online-pip"></div>
+      Online now only
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-layout">
+
+    <!-- GRID -->
+    <div class="grid-col">
+      <div class="mag-grid" id="mag-grid">
+
+        <a href="profile.html" class="mag-card" data-city="Los Angeles" data-style="Mentalism" data-avail="Corporate" data-online="true" data-name="Marcus Veil">
+          <div class="mag-card-img c1">
+            🎩
+            <div class="online-badge"><div class="online-dot"></div>Online</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Marcus Veil</div>
+            <div class="mag-location">Los Angeles, CA</div>
+            <div class="mag-tags"><span class="mag-tag">Mentalism</span><span class="mag-tag">Close-up</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.9</span><span class="mag-reviews">142 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="New York" data-style="Stage" data-avail="Theater" data-online="false" data-name="Celeste Noir">
+          <div class="mag-card-img c2">
+            🪄
+            <div class="last-seen">2h ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Celeste Noir</div>
+            <div class="mag-location">New York, NY</div>
+            <div class="mag-tags"><span class="mag-tag">Stage</span><span class="mag-tag">Illusion</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.8</span><span class="mag-reviews">98 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Chicago" data-style="Comedy" data-avail="Private" data-online="true" data-name="Dorian Shade">
+          <div class="mag-card-img c3">
+            🃏
+            <div class="online-badge"><div class="online-dot"></div>Online</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Dorian Shade</div>
+            <div class="mag-location">Chicago, IL</div>
+            <div class="mag-tags"><span class="mag-tag">Card magic</span><span class="mag-tag">Comedy</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.7</span><span class="mag-reviews">211 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Seattle" data-style="Escape" data-avail="Theater" data-online="false" data-name="Isolde Grey">
+          <div class="mag-card-img c4">
+            ✨
+            <div class="last-seen">5h ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Isolde Grey</div>
+            <div class="mag-location">Seattle, WA</div>
+            <div class="mag-tags"><span class="mag-tag">Escape</span><span class="mag-tag">Stage</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 5.0</span><span class="mag-reviews">64 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Las Vegas" data-style="Stage" data-avail="Theater" data-online="true" data-name="Victor Ashby">
+          <div class="mag-card-img c5">
+            🎭
+            <div class="online-badge"><div class="online-dot"></div>Online</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Victor Ashby</div>
+            <div class="mag-location">Las Vegas, NV</div>
+            <div class="mag-tags"><span class="mag-tag">Stage</span><span class="mag-tag">Illusion</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.6</span><span class="mag-reviews">87 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Seattle" data-style="Mentalism" data-avail="Corporate" data-online="false" data-name="Remy Cross">
+          <div class="mag-card-img c6">
+            🌟
+            <div class="last-seen">1d ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Remy Cross</div>
+            <div class="mag-location">Seattle, WA</div>
+            <div class="mag-tags"><span class="mag-tag">Mentalism</span><span class="mag-tag">Parlor</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.5</span><span class="mag-reviews">43 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Los Angeles" data-style="Close-up" data-avail="Wedding" data-online="false" data-name="Elena Hart">
+          <div class="mag-card-img c7">
+            🎪
+            <div class="last-seen">3h ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Elena Hart</div>
+            <div class="mag-location">Los Angeles, CA</div>
+            <div class="mag-tags"><span class="mag-tag">Close-up</span><span class="mag-tag">Wedding</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.9</span><span class="mag-reviews">156 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="New York" data-style="Card" data-avail="Private" data-online="true" data-name="Felix Dumont">
+          <div class="mag-card-img c8">
+            🃏
+            <div class="online-badge"><div class="online-dot"></div>Online</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Felix Dumont</div>
+            <div class="mag-location">New York, NY</div>
+            <div class="mag-tags"><span class="mag-tag">Card magic</span><span class="mag-tag">Close-up</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.8</span><span class="mag-reviews">72 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Chicago" data-style="Stage" data-avail="Corporate" data-online="false" data-name="Nadia Voss">
+          <div class="mag-card-img c9">
+            ✨
+            <div class="last-seen">6h ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Nadia Voss</div>
+            <div class="mag-location">Chicago, IL</div>
+            <div class="mag-tags"><span class="mag-tag">Stage</span><span class="mag-tag">Corporate</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.7</span><span class="mag-reviews">91 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Las Vegas" data-style="Close-up" data-avail="Private" data-online="true" data-name="Jasper Holt">
+          <div class="mag-card-img c10">
+            🎩
+            <div class="online-badge"><div class="online-dot"></div>Online</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Jasper Holt</div>
+            <div class="mag-location">Las Vegas, NV</div>
+            <div class="mag-tags"><span class="mag-tag">Close-up</span><span class="mag-tag">Mentalism</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.6</span><span class="mag-reviews">38 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="Los Angeles" data-style="Comedy" data-avail="Wedding" data-online="false" data-name="Sylvie Crane">
+          <div class="mag-card-img c11">
+            🪄
+            <div class="last-seen">2d ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Sylvie Crane</div>
+            <div class="mag-location">Los Angeles, CA</div>
+            <div class="mag-tags"><span class="mag-tag">Comedy</span><span class="mag-tag">Children's</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 5.0</span><span class="mag-reviews">203 reviews</span></div>
+          </div>
+        </a>
+
+        <a href="profile.html" class="mag-card" data-city="New York" data-style="Escape" data-avail="Theater" data-online="false" data-name="Orion Blake">
+          <div class="mag-card-img c12">
+            🎭
+            <div class="last-seen">4h ago</div>
+          </div>
+          <div class="mag-card-body">
+            <div class="mag-name">Orion Blake</div>
+            <div class="mag-location">New York, NY</div>
+            <div class="mag-tags"><span class="mag-tag">Escape</span><span class="mag-tag">Stage</span></div>
+            <div class="mag-footer"><span class="mag-rating">★ 4.8</span><span class="mag-reviews">55 reviews</span></div>
+          </div>
+        </a>
+
+        <!-- empty state -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">🎩</div>
+          <div class="empty-title">No magicians found</div>
+          <div class="empty-sub">Try adjusting your filters or search term.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-col">
+
+      <div class="sb-section">
+        <div class="sb-title">Browse by specialty</div>
+        <div class="spec-tags">
+          <div class="spec-tag" onclick="setStyle('Mentalism', this)">Mentalism</div>
+          <div class="spec-tag" onclick="setStyle('Close-up', this)">Close-up</div>
+          <div class="spec-tag" onclick="setStyle('Stage', this)">Stage</div>
+          <div class="spec-tag" onclick="setStyle('Comedy', this)">Comedy</div>
+          <div class="spec-tag" onclick="setStyle('Escape', this)">Escape</div>
+          <div class="spec-tag" onclick="setStyle('Card', this)">Card magic</div>
+        </div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-title">Browse by city</div>
+        <div class="city-row" onclick="setCity('Los Angeles')"><span class="city-name">Los Angeles</span><span class="city-count">3 magicians</span></div>
+        <div class="city-row" onclick="setCity('New York')"><span class="city-name">New York</span><span class="city-count">3 magicians</span></div>
+        <div class="city-row" onclick="setCity('Chicago')"><span class="city-name">Chicago</span><span class="city-count">2 magicians</span></div>
+        <div class="city-row" onclick="setCity('Seattle')"><span class="city-name">Seattle</span><span class="city-count">2 magicians</span></div>
+        <div class="city-row" onclick="setCity('Las Vegas')"><span class="city-name">Las Vegas</span><span class="city-count">2 magicians</span></div>
+      </div>
+
+      <div class="join-cta">
+        <div class="join-title">Are you a magician?</div>
+        <div class="join-body">Create your free profile and reach fans, event organisers, and venues across Magicalive.</div>
+        <a href="create-profile.html" class="join-btn">Create your profile →</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let onlineOnly = false;
+
+    function toggleOnline() {
+      onlineOnly = !onlineOnly;
+      document.getElementById('online-filter').classList.toggle('active', onlineOnly);
+      applyFilters();
+    }
+
+    function setCity(city) {
+      document.getElementById('filter-city').value = city;
+      applyFilters();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setStyle(style, el) {
+      const isActive = el.classList.contains('active');
+      document.querySelectorAll('.spec-tag').forEach(t => t.classList.remove('active'));
+      if (!isActive) {
+        el.classList.add('active');
+        document.getElementById('filter-style').value = style;
+      } else {
+        document.getElementById('filter-style').value = '';
+      }
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const city   = document.getElementById('filter-city').value;
+      const style  = document.getElementById('filter-style').value;
+      const avail  = document.getElementById('filter-avail').value;
+
+      const cards = document.querySelectorAll('.mag-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const cardCity   = card.dataset.city   || '';
+        const cardStyle  = card.dataset.style  || '';
+        const cardAvail  = card.dataset.avail  || '';
+        const cardOnline = card.dataset.online === 'true';
+        const cardName   = (card.dataset.name  || '').toLowerCase();
+
+        const matchCity   = !city   || cardCity  === city;
+        const matchStyle  = !style  || cardStyle === style;
+        const matchAvail  = !avail  || cardAvail === avail;
+        const matchSearch = !search || cardName.includes(search) || cardCity.toLowerCase().includes(search);
+        const matchOnline = !onlineOnly || cardOnline;
+
+        const show = matchCity && matchStyle && matchAvail && matchSearch && matchOnline;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      document.getElementById('result-count').textContent = visible + (visible === 1 ? ' magician' : ' magicians');
+      document.getElementById('empty-state').classList.toggle('visible', visible === 0);
+    }
+  </script>
+
+</body>
+</html>
