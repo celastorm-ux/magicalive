@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venues — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --ink: #0d0b0e;
+      --gold: #c9a84c;
+      --gold-dim: #8a6f2e;
+      --cream: #f5f0e8;
+      --cream-dim: #e8e0d0;
+      --muted: #6b6460;
+      --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18);
+      --online: #3ecf8e;
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky;
+      top: 0;
+      background: rgba(13,11,14,0.94);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a.active { color: var(--cream); }
+    .btn-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid var(--gold-dim);
+      background: none;
+      padding: 7px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 52px 48px 36px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.1);
+    }
+    .page-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .page-title em { font-style: italic; color: var(--gold); }
+    .page-sub { font-size: 13px; color: var(--muted); }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.1);
+      flex-wrap: wrap;
+    }
+    .filter-input {
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 2px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      padding: 8px 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .filter-input:focus { border-color: rgba(201,168,76,0.5); }
+    .filter-input::placeholder { color: var(--muted); }
+    select.filter-input {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+    select.filter-input option { background: #1a1520; color: var(--cream); }
+    .filter-sep { width: 0.5px; height: 24px; background: rgba(201,168,76,0.15); }
+    .result-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    /* ── MAIN LAYOUT ── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* ── MAP PANE ── */
+    .map-pane {
+      position: sticky;
+      top: 57px;
+      height: calc(100vh - 57px);
+      background: #0e0d11;
+      border-right: 0.5px solid rgba(201,168,76,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .map-inner { flex: 1; position: relative; overflow: hidden; }
+    .map-bg    { position: absolute; inset: 0; background: #0e0d11; }
+    .map-grid  {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.045) 1px, transparent 1px);
+      background-size: 44px 44px;
+    }
+    /* decorative roads */
+    .road { position: absolute; background: rgba(201,168,76,0.07); }
+
+    /* city labels */
+    .city-label {
+      position: absolute;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(201,168,76,0.3);
+      pointer-events: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* pins */
+    .pin {
+      position: absolute;
+      cursor: pointer;
+      transform: translate(-50%, -100%);
+      transition: transform 0.15s;
+      z-index: 2;
+    }
+    .pin:hover { transform: translate(-50%, -112%); }
+    .pin-dot {
+      width: 30px; height: 30px;
+      border-radius: 50% 50% 50% 0;
+      background: var(--gold);
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(13,11,14,0.7);
+      transition: background 0.2s;
+    }
+    .pin.active .pin-dot { background: var(--cream); }
+    .pin-inner { transform: rotate(45deg); font-size: 13px; }
+    .pin-label {
+      font-size: 10px;
+      color: var(--cream);
+      background: rgba(13,11,14,0.88);
+      padding: 3px 8px;
+      border-radius: 2px;
+      white-space: nowrap;
+      margin-top: 5px;
+      transform: translateX(-40%);
+      border: 0.5px solid rgba(201,168,76,0.2);
+      display: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .pin:hover .pin-label,
+    .pin.active .pin-label { display: block; }
+
+    /* map legend */
+    .map-legend {
+      padding: 12px 18px;
+      border-top: 0.5px solid rgba(201,168,76,0.12);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-shrink: 0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-hint { font-size: 11px; color: var(--muted); margin-left: auto; }
+
+    /* ── VENUE LIST ── */
+    .venue-list {
+      overflow-y: auto;
+      height: calc(100vh - 57px);
+    }
+    .venue-list::-webkit-scrollbar { width: 3px; }
+    .venue-list::-webkit-scrollbar-track { background: transparent; }
+    .venue-list::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.2); border-radius: 2px; }
+
+    /* ── VENUE CARD ── */
+    .venue-card {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      border-left: 2px solid transparent;
+    }
+    .venue-card:hover  { background: rgba(201,168,76,0.03); }
+    .venue-card.active {
+      background: rgba(201,168,76,0.04);
+      border-left-color: var(--gold);
+    }
+    .venue-img {
+      width: 96px;
+      min-width: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      flex-shrink: 0;
+    }
+    .vi1 { background: linear-gradient(135deg,#1a1020,#2d1f3d); }
+    .vi2 { background: linear-gradient(135deg,#0f1a20,#1a3040); }
+    .vi3 { background: linear-gradient(135deg,#1a1510,#3d2a0f); }
+    .vi4 { background: linear-gradient(135deg,#101a15,#0f3020); }
+    .vi5 { background: linear-gradient(135deg,#1a1020,#1a0f20); }
+    .vi6 { background: linear-gradient(135deg,#0d1520,#152030); }
+    .venue-body { flex: 1; padding: 18px 20px; min-width: 0; }
+    .venue-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 3px;
+    }
+    .venue-location { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .venue-meta-row {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .venue-meta-item { font-size: 11px; color: var(--cream-dim); display: flex; align-items: center; gap: 5px; }
+    .venue-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .vtag {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 0.5px solid rgba(138,111,46,0.35);
+      padding: 2px 9px;
+      border-radius: 1px;
+    }
+    .venue-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 0.5px solid rgba(255,255,255,0.05);
+    }
+    .venue-shows { font-size: 12px; color: var(--online); }
+    .venue-btn {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid rgba(201,168,76,0.3);
+      background: none;
+      padding: 5px 13px;
+      border-radius: 1px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .venue-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      padding: 60px 40px;
+      text-align: center;
+      display: none;
+    }
+    .empty-state.visible { display: block; }
+    .empty-icon  { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--cream); margin-bottom: 6px; }
+    .empty-sub   { font-size: 13px; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .page-header { padding: 36px 20px 24px; }
+      .filters { padding: 14px 20px; }
+      .main-layout { grid-template-columns: 1fr; }
+      .map-pane { display: none; }
+      .venue-list { height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="#">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html" class="active">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+    </ul>
+    <a href="signin.html" class="btn-ghost">Sign in</a>
+  </nav>
+
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header">
+    <div class="page-eyebrow">Where magic happens</div>
+    <h1 class="page-title">Active <em>venues</em></h1>
+    <p class="page-sub">320 magic-friendly venues across the US — theaters, lounges, and private clubs</p>
+  </div>
+
+  <!-- ── FILTERS ── -->
+  <div class="filters">
+    <input
+      class="filter-input"
+      type="text"
+      id="search-input"
+      placeholder="Search venues…"
+      style="width: 200px;"
+      oninput="applyFilters()"
+    >
+    <div class="filter-sep"></div>
+    <select class="filter-input" id="filter-city" onchange="applyFilters()">
+      <option value="">All cities</option>
+      <option value="Los Angeles">Los Angeles</option>
+      <option value="Hollywood">Hollywood</option>
+      <option value="New York">New York</option>
+      <option value="Chicago">Chicago</option>
+      <option value="Seattle">Seattle</option>
+    </select>
+    <select class="filter-input" id="filter-type" onchange="applyFilters()">
+      <option value="">Any type</option>
+      <option value="Theater">Theater</option>
+      <option value="Lounge">Lounge / bar</option>
+      <option value="Club">Private club</option>
+      <option value="Center">Magic center</option>
+    </select>
+    <select class="filter-input" id="filter-cap" onchange="applyFilters()">
+      <option value="">Any capacity</option>
+      <option value="small">Under 300</option>
+      <option value="medium">300–1000</option>
+      <option value="large">1000+</option>
+    </select>
+    <span class="result-count" id="result-count">6 venues</span>
+  </div>
+
+  <!-- ── MAIN LAYOUT ── -->
+  <div class="main-layout">
+
+    <!-- MAP PANE -->
+    <div class="map-pane">
+      <div class="map-inner">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+
+        <!-- Roads -->
+        <div class="road" style="left:0;right:0;top:44%;height:1px;"></div>
+        <div class="road" style="left:0;right:0;top:64%;height:1px;"></div>
+        <div class="road" style="left:0;right:0;top:28%;height:0.5px;opacity:0.5;"></div>
+        <div class="road" style="top:0;bottom:0;left:28%;width:1px;"></div>
+        <div class="road" style="top:0;bottom:0;left:54%;width:1px;"></div>
+        <div class="road" style="top:0;bottom:0;left:79%;width:1px;"></div>
+        <div class="road" style="top:0;bottom:0;left:14%;width:0.5px;opacity:0.5;"></div>
+
+        <!-- City labels -->
+        <div class="city-label" style="left:6%; top:72%;">Los Angeles</div>
+        <div class="city-label" style="left:6%; top:30%;">Seattle</div>
+        <div class="city-label" style="left:47%;top:52%;">Chicago</div>
+        <div class="city-label" style="left:75%;top:38%;">New York</div>
+
+        <!-- Pins -->
+        <div class="pin active" id="pin-magic-castle" style="left:9%;top:68%;" onclick="activatePin('magic-castle')">
+          <div class="pin-dot"><div class="pin-inner">🏰</div></div>
+          <div class="pin-label">The Magic Castle</div>
+        </div>
+        <div class="pin" id="pin-orpheum" style="left:7%;top:78%;" onclick="activatePin('orpheum')">
+          <div class="pin-dot"><div class="pin-inner">🏛</div></div>
+          <div class="pin-label">The Orpheum</div>
+        </div>
+        <div class="pin" id="pin-beacon" style="left:79%;top:44%;" onclick="activatePin('beacon')">
+          <div class="pin-dot"><div class="pin-inner">🌟</div></div>
+          <div class="pin-label">Beacon Theatre</div>
+        </div>
+        <div class="pin" id="pin-chicago" style="left:51%;top:56%;" onclick="activatePin('chicago')">
+          <div class="pin-dot"><div class="pin-inner">🃏</div></div>
+          <div class="pin-label">Chicago Magic Lounge</div>
+        </div>
+        <div class="pin" id="pin-neptune" style="left:11%;top:36%;" onclick="activatePin('neptune')">
+          <div class="pin-dot"><div class="pin-inner">🎭</div></div>
+          <div class="pin-label">Neptune Theatre</div>
+        </div>
+        <div class="pin" id="pin-nymagic" style="left:77%;top:52%;" onclick="activatePin('nymagic')">
+          <div class="pin-dot"><div class="pin-inner">✨</div></div>
+          <div class="pin-label">NY Magic Center</div>
+        </div>
+      </div>
+
+      <div class="map-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--gold)"></div>
+          Active venue
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--online)"></div>
+          Has upcoming shows
+        </div>
+        <span class="legend-hint">Click a pin to highlight</span>
+      </div>
+    </div>
+
+    <!-- VENUE LIST -->
+    <div class="venue-list" id="venue-list">
+
+      <div class="venue-card active" id="vc-magic-castle"
+           data-city="Hollywood" data-type="Club" data-cap="small" data-name="The Magic Castle"
+           onclick="activateCard('magic-castle')">
+        <div class="venue-img vi1">🏰</div>
+        <div class="venue-body">
+          <div class="venue-name">The Magic Castle</div>
+          <div class="venue-location">Hollywood, CA · Private club</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 400</div>
+            <div class="venue-meta-item">🎭 Est. 1963</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Stage magic</span>
+            <span class="vtag">Close-up rooms</span>
+            <span class="vtag">Members only</span>
+            <span class="vtag">Full bar</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">12 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="venue-card" id="vc-orpheum"
+           data-city="Los Angeles" data-type="Theater" data-cap="large" data-name="The Orpheum Theatre"
+           onclick="activateCard('orpheum')">
+        <div class="venue-img vi2">🏛</div>
+        <div class="venue-body">
+          <div class="venue-name">The Orpheum Theatre</div>
+          <div class="venue-location">Los Angeles, CA · Historic theater</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 2,000</div>
+            <div class="venue-meta-item">🎭 Est. 1926</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Stage illusions</span>
+            <span class="vtag">Grand theater</span>
+            <span class="vtag">Full production</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">3 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="venue-card" id="vc-beacon"
+           data-city="New York" data-type="Theater" data-cap="large" data-name="Beacon Theatre"
+           onclick="activateCard('beacon')">
+        <div class="venue-img vi3">🌟</div>
+        <div class="venue-body">
+          <div class="venue-name">Beacon Theatre</div>
+          <div class="venue-location">New York, NY · Concert hall</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 2,800</div>
+            <div class="venue-meta-item">🎭 Est. 1929</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Stage magic</span>
+            <span class="vtag">Large format</span>
+            <span class="vtag">Seated dining</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">5 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="venue-card" id="vc-chicago"
+           data-city="Chicago" data-type="Lounge" data-cap="small" data-name="Chicago Magic Lounge"
+           onclick="activateCard('chicago')">
+        <div class="venue-img vi4">🃏</div>
+        <div class="venue-body">
+          <div class="venue-name">Chicago Magic Lounge</div>
+          <div class="venue-location">Chicago, IL · Dedicated magic venue</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 200</div>
+            <div class="venue-meta-item">🎭 Est. 2018</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Close-up magic</span>
+            <span class="vtag">Parlor magic</span>
+            <span class="vtag">Cocktail bar</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">8 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="venue-card" id="vc-neptune"
+           data-city="Seattle" data-type="Theater" data-cap="medium" data-name="Neptune Theatre"
+           onclick="activateCard('neptune')">
+        <div class="venue-img vi5">🎭</div>
+        <div class="venue-body">
+          <div class="venue-name">Neptune Theatre</div>
+          <div class="venue-location">Seattle, WA · Neighborhood theater</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 800</div>
+            <div class="venue-meta-item">🎭 Est. 1921</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Stage magic</span>
+            <span class="vtag">Intimate theater</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">2 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="venue-card" id="vc-nymagic"
+           data-city="New York" data-type="Center" data-cap="small" data-name="NY Magic Center"
+           onclick="activateCard('nymagic')">
+        <div class="venue-img vi6">✨</div>
+        <div class="venue-body">
+          <div class="venue-name">NY Magic Center</div>
+          <div class="venue-location">New York, NY · Dedicated magic venue</div>
+          <div class="venue-meta-row">
+            <div class="venue-meta-item">👥 Capacity: 150</div>
+            <div class="venue-meta-item">🎭 Est. 2010</div>
+          </div>
+          <div class="venue-tags">
+            <span class="vtag">Mentalism</span>
+            <span class="vtag">Close-up magic</span>
+            <span class="vtag">Workshops</span>
+          </div>
+          <div class="venue-footer">
+            <span class="venue-shows">6 upcoming shows</span>
+            <a href="#" class="venue-btn">View venue ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">🏛</div>
+        <div class="empty-title">No venues found</div>
+        <div class="empty-sub">Try adjusting your filters to find a venue nearby.</div>
+      </div>
+
+    </div><!-- /venue-list -->
+
+  </div><!-- /main-layout -->
+
+  <script>
+    /* ── PIN / CARD SYNC ── */
+    const PIN_MAP = {
+      'magic-castle': 0,
+      'orpheum':      1,
+      'beacon':       2,
+      'chicago':      3,
+      'neptune':      4,
+      'nymagic':      5,
+    };
+    const CARD_IDS = ['magic-castle','orpheum','beacon','chicago','neptune','nymagic'];
+
+    function activatePin(id) {
+      document.querySelectorAll('.pin').forEach(p => p.classList.remove('active'));
+      document.getElementById('pin-' + id).classList.add('active');
+      document.querySelectorAll('.venue-card').forEach(c => c.classList.remove('active'));
+      const card = document.getElementById('vc-' + id);
+      if (card && card.style.display !== 'none') {
+        card.classList.add('active');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function activateCard(id) {
+      document.querySelectorAll('.venue-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('vc-' + id).classList.add('active');
+      document.querySelectorAll('.pin').forEach(p => p.classList.remove('active'));
+      const pin = document.getElementById('pin-' + id);
+      if (pin) pin.classList.add('active');
+    }
+
+    /* ── FILTERS ── */
+    function applyFilters() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const city   = document.getElementById('filter-city').value;
+      const type   = document.getElementById('filter-type').value;
+      const cap    = document.getElementById('filter-cap').value;
+
+      const capRanges = { small: [0, 299], medium: [300, 999], large: [1000, 99999] };
+
+      const cards = document.querySelectorAll('.venue-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const cardCity = card.dataset.city  || '';
+        const cardType = card.dataset.type  || '';
+        const cardCap  = card.dataset.cap   || '';
+        const cardName = (card.dataset.name || '').toLowerCase();
+
+        const matchCity   = !city   || cardCity === city;
+        const matchType   = !type   || cardType === type;
+        const matchSearch = !search || cardName.includes(search);
+        const matchCap    = !cap    || cardCap  === cap;
+
+        const show = matchCity && matchType && matchSearch && matchCap;
+        card.style.display = show ? '' : 'none';
+
+        // sync pin visibility
+        const pinId = card.id.replace('vc-', '');
+        const pin = document.getElementById('pin-' + pinId);
+        if (pin) pin.style.opacity = show ? '1' : '0.2';
+
+        if (show) visible++;
+      });
+
+      document.getElementById('result-count').textContent = visible + (visible === 1 ? ' venue' : ' venues');
+      document.getElementById('empty-state').classList.toggle('visible', visible === 0);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --ink: #0d0b0e;
+      --gold: #c9a84c;
+      --gold-dim: #8a6f2e;
+      --cream: #f5f0e8;
+      --cream-dim: #e8e0d0;
+      --muted: #6b6460;
+      --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18);
+      --online: #3ecf8e;
+      --danger: #e24b4a;
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky;
+      top: 0;
+      background: rgba(13,11,14,0.94);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a.active { color: var(--cream); }
+    .nav-right { display: flex; gap: 10px; }
+    .btn-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid var(--gold-dim);
+      background: none;
+      padding: 7px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 52px 48px 36px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.1);
+    }
+    .page-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .page-title em { font-style: italic; color: var(--gold); }
+    .page-sub { font-size: 13px; color: var(--muted); }
+
+    /* ── FILTERS ── */
+    .filters {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.1);
+      flex-wrap: wrap;
+    }
+    .filter-input {
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 2px;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      padding: 8px 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .filter-input:focus { border-color: rgba(201,168,76,0.5); }
+    .filter-input::placeholder { color: var(--muted); }
+    select.filter-input {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+    select.filter-input option { background: #1a1520; color: var(--cream); }
+    .filter-sep { width: 0.5px; height: 24px; background: rgba(201,168,76,0.15); }
+    .result-count { font-size: 12px; color: var(--muted); }
+
+    /* view toggle */
+    .view-toggle {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-left: auto;
+    }
+    .view-btn {
+      padding: 7px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--muted);
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .view-btn.active { background: rgba(201,168,76,0.12); color: var(--gold); }
+
+    /* ── MAIN LAYOUT ── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+    }
+
+    /* ── EVENTS COLUMN ── */
+    .events-col { border-right: 0.5px solid rgba(201,168,76,0.1); }
+
+    /* ── DATE GROUP ── */
+    .date-group { border-bottom: 0.5px solid rgba(201,168,76,0.07); }
+    .date-heading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 48px 12px;
+    }
+    .date-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--cream);
+      white-space: nowrap;
+    }
+    .date-rule { flex: 1; height: 0.5px; background: rgba(201,168,76,0.12); }
+    .date-count { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    /* ── EVENT ROW ── */
+    .event-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 48px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 0.5px solid rgba(255,255,255,0.03);
+      text-decoration: none;
+    }
+    .event-row:hover { background: rgba(201,168,76,0.03); }
+    .event-date-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      padding: 18px 0;
+      border-right: 0.5px solid rgba(201,168,76,0.1);
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+    .event-day {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .event-mon {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .event-body {
+      flex: 1;
+      padding: 18px 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-width: 0;
+    }
+    .event-info { flex: 1; min-width: 0; }
+    .event-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--cream);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .event-meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .event-tags { display: flex; gap: 6px; flex-shrink: 0; }
+    .etag {
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 1px;
+      white-space: nowrap;
+    }
+    .etag-soon { background: rgba(201,168,76,0.1);  color: var(--gold);   border: 0.5px solid rgba(201,168,76,0.3); }
+    .etag-new  { background: rgba(62,207,142,0.1);  color: var(--online); border: 0.5px solid rgba(62,207,142,0.3); }
+    .etag-sold { background: rgba(226,75,74,0.1);   color: var(--danger); border: 0.5px solid rgba(226,75,74,0.3); }
+    .event-cta {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid rgba(201,168,76,0.3);
+      background: none;
+      padding: 7px 14px;
+      border-radius: 1px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .event-cta:hover { background: var(--gold); color: var(--ink); }
+    .event-cta.sold { opacity: 0.35; pointer-events: none; color: var(--muted); border-color: rgba(255,255,255,0.1); }
+
+    /* ── CARD VIEW ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      padding: 28px 48px;
+    }
+    .event-card {
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      text-decoration: none;
+      display: block;
+    }
+    .event-card:hover { border-color: rgba(201,168,76,0.45); transform: translateY(-2px); }
+    .ec-img {
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+    }
+    .ec1 { background: linear-gradient(135deg, #1a1020, #2d1f3d); }
+    .ec2 { background: linear-gradient(135deg, #0f1a20, #1a3040); }
+    .ec3 { background: linear-gradient(135deg, #1a1510, #3d2a0f); }
+    .ec4 { background: linear-gradient(135deg, #101a15, #0f3020); }
+    .ec5 { background: linear-gradient(135deg, #1a1020, #1a0f20); }
+    .ec6 { background: linear-gradient(135deg, #0d1520, #152030); }
+    .ec7 { background: linear-gradient(135deg, #1a1015, #2d0f20); }
+    .ec8 { background: linear-gradient(135deg, #0f180d, #1a2f10); }
+    .ec-body { padding: 13px 15px 15px; }
+    .ec-date {
+      font-size: 11px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 5px;
+    }
+    .ec-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .ec-meta { font-size: 11px; color: var(--muted); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      padding: 60px 48px;
+      text-align: center;
+      display: none;
+    }
+    .empty-state.visible { display: block; }
+    .empty-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+    .empty-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--cream); margin-bottom: 6px; }
+    .empty-sub { font-size: 13px; color: var(--muted); }
+
+    /* ── SIDEBAR ── */
+    .sidebar-col { padding: 28px 24px; }
+    .sb-section { margin-bottom: 28px; }
+    .sb-title {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+    }
+
+    /* performing this month */
+    .perf-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .perf-row:hover { opacity: 0.8; }
+    .perf-row:last-child { border-bottom: none; }
+    .perf-ava {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .pa1 { background: linear-gradient(135deg,#2d1f3d,#534AB7); }
+    .pa2 { background: linear-gradient(135deg,#0f1a20,#1a3040); }
+    .pa3 { background: linear-gradient(135deg,#1a1510,#3d2a0f); }
+    .pa4 { background: linear-gradient(135deg,#101a15,#0f3020); }
+    .pa5 { background: linear-gradient(135deg,#1a1020,#2d0f2d); }
+    .perf-info { flex: 1; min-width: 0; }
+    .perf-name { font-size: 13px; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .perf-shows { font-size: 11px; color: var(--muted); }
+    .online-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--online); flex-shrink: 0; }
+
+    /* city list */
+    .city-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .city-row:hover { opacity: 0.8; }
+    .city-row:last-child { border-bottom: none; }
+    .city-name { font-size: 13px; color: var(--cream); }
+    .city-count { font-size: 11px; color: var(--muted); }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .page-header { padding: 36px 20px 24px; }
+      .filters { padding: 14px 20px; }
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar-col { display: none; }
+      .event-row { padding: 0 20px; }
+      .date-heading { padding: 14px 20px 10px; }
+      .cards-grid { padding: 20px; grid-template-columns: 1fr 1fr; }
+      .event-tags { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="#">Magicians</a></li>
+      <li><a href="events.html" class="active">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="signin.html" class="btn-ghost">Sign in</a>
+    </div>
+  </nav>
+
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header">
+    <div class="page-eyebrow">What's on</div>
+    <h1 class="page-title">Upcoming <em>events</em></h1>
+    <p class="page-sub" id="result-sub">840 shows across 120 cities — find magic near you</p>
+  </div>
+
+  <!-- ── FILTERS ── -->
+  <div class="filters">
+    <input
+      class="filter-input"
+      type="text"
+      id="search-input"
+      placeholder="Search events or magicians…"
+      style="width: 220px;"
+      oninput="applyFilters()"
+    >
+    <div class="filter-sep"></div>
+    <select class="filter-input" id="filter-city" onchange="applyFilters()">
+      <option value="">All cities</option>
+      <option value="Los Angeles">Los Angeles</option>
+      <option value="New York">New York</option>
+      <option value="Chicago">Chicago</option>
+      <option value="Seattle">Seattle</option>
+      <option value="Hollywood">Hollywood</option>
+    </select>
+    <select class="filter-input" id="filter-style" onchange="applyFilters()">
+      <option value="">Any style</option>
+      <option value="Mentalism">Mentalism</option>
+      <option value="Close-up">Close-up magic</option>
+      <option value="Stage">Stage illusions</option>
+      <option value="Comedy">Comedy magic</option>
+      <option value="Escape">Escape artistry</option>
+    </select>
+    <select class="filter-input" id="filter-date" onchange="applyFilters()">
+      <option value="">Any date</option>
+      <option value="week">This week</option>
+      <option value="month">This month</option>
+    </select>
+    <span class="result-count" id="result-count">12 events</span>
+    <div class="view-toggle">
+      <button class="view-btn active" id="vb-list" onclick="setView('list')">List</button>
+      <button class="view-btn"        id="vb-card" onclick="setView('card')">Cards</button>
+    </div>
+  </div>
+
+  <!-- ── MAIN LAYOUT ── -->
+  <div class="main-layout">
+
+    <!-- EVENTS COLUMN -->
+    <div class="events-col">
+
+      <!-- LIST VIEW -->
+      <div id="list-view">
+
+        <!-- THIS WEEK -->
+        <div class="date-group" id="group-week">
+          <div class="date-heading">
+            <span class="date-label">This week</span>
+            <div class="date-rule"></div>
+            <span class="date-count" id="count-week">3 events</span>
+          </div>
+
+          <a href="#" class="event-row"
+             data-city="Los Angeles" data-style="Mentalism" data-period="week"
+             data-name="An Evening with Marcus Veil">
+            <div class="event-date-col"><div class="event-day">22</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">An Evening with Marcus Veil</div>
+                <div class="event-meta">
+                  <span>🏛 The Orpheum</span>
+                  <span>📍 Los Angeles, CA</span>
+                  <span>🕗 8:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-soon">This week</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Chicago" data-style="Comedy" data-period="week"
+             data-name="Dorian Shade — Comedy & Cards">
+            <div class="event-date-col"><div class="event-day">23</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Dorian Shade — Comedy &amp; Cards</div>
+                <div class="event-meta">
+                  <span>🏛 Chicago Magic Lounge</span>
+                  <span>📍 Chicago, IL</span>
+                  <span>🕘 9:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-soon">This week</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Hollywood" data-style="Stage" data-period="week"
+             data-name="The Magic Castle Weekly Showcase">
+            <div class="event-date-col"><div class="event-day">24</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">The Magic Castle — Weekly Showcase</div>
+                <div class="event-meta">
+                  <span>🏛 The Magic Castle</span>
+                  <span>📍 Hollywood, CA</span>
+                  <span>🕖 7:30 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-sold">Sold out</span></div>
+              <button class="event-cta sold" onclick="event.preventDefault()">Sold out</button>
+            </div>
+          </a>
+        </div>
+
+        <!-- LATER IN MARCH -->
+        <div class="date-group" id="group-march">
+          <div class="date-heading">
+            <span class="date-label">Later in March</span>
+            <div class="date-rule"></div>
+            <span class="date-count" id="count-march">5 events</span>
+          </div>
+
+          <a href="#" class="event-row"
+             data-city="New York" data-style="Stage" data-period="month"
+             data-name="Celeste Noir — Shadows & Light">
+            <div class="event-date-col"><div class="event-day">28</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Celeste Noir — Shadows &amp; Light</div>
+                <div class="event-meta">
+                  <span>🏛 Beacon Theatre</span>
+                  <span>📍 New York, NY</span>
+                  <span>🕖 7:30 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-new">New</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Seattle" data-style="Mentalism" data-period="month"
+             data-name="Remy Cross — Deceptions">
+            <div class="event-date-col"><div class="event-day">29</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Remy Cross — Deceptions</div>
+                <div class="event-meta">
+                  <span>🏛 Neptune Theatre</span>
+                  <span>📍 Seattle, WA</span>
+                  <span>🕗 8:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-new">New</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Seattle" data-style="Escape" data-period="month"
+             data-name="Isolde Grey — The Escape Experience">
+            <div class="event-date-col"><div class="event-day">30</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Isolde Grey — The Escape Experience</div>
+                <div class="event-meta">
+                  <span>🏛 Fremont Abbey</span>
+                  <span>📍 Seattle, WA</span>
+                  <span>🕗 8:30 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-new">New</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Los Angeles" data-style="Close-up" data-period="month"
+             data-name="Victor Ashby — Parlour Magic Evening">
+            <div class="event-date-col"><div class="event-day">31</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Victor Ashby — Parlour Magic Evening</div>
+                <div class="event-meta">
+                  <span>🏛 The Dresden</span>
+                  <span>📍 Los Angeles, CA</span>
+                  <span>🕘 9:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Los Angeles" data-style="Mentalism" data-period="month"
+             data-name="Marcus Veil — Mind Games Residency">
+            <div class="event-date-col"><div class="event-day">31</div><div class="event-mon">Mar</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Marcus Veil — Mind Games Residency</div>
+                <div class="event-meta">
+                  <span>🏛 The Dresden</span>
+                  <span>📍 Los Angeles, CA</span>
+                  <span>🕘 9:30 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+        </div>
+
+        <!-- APRIL -->
+        <div class="date-group" id="group-april">
+          <div class="date-heading">
+            <span class="date-label">April</span>
+            <div class="date-rule"></div>
+            <span class="date-count" id="count-april">4 events</span>
+          </div>
+
+          <a href="#" class="event-row"
+             data-city="Los Angeles" data-style="Stage" data-period="month"
+             data-name="The Spring Showcase">
+            <div class="event-date-col"><div class="event-day">04</div><div class="event-mon">Apr</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">The Spring Showcase — Multiple Artists</div>
+                <div class="event-meta">
+                  <span>🏛 The Orpheum</span>
+                  <span>📍 Los Angeles, CA</span>
+                  <span>🕖 7:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"><span class="etag etag-new">New</span></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Chicago" data-style="Stage" data-period="month"
+             data-name="Celeste Noir — One Night Only Chicago">
+            <div class="event-date-col"><div class="event-day">11</div><div class="event-mon">Apr</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Celeste Noir — One Night Only, Chicago</div>
+                <div class="event-meta">
+                  <span>🏛 Chicago Magic Lounge</span>
+                  <span>📍 Chicago, IL</span>
+                  <span>🕗 8:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="Seattle" data-style="Mentalism" data-period="month"
+             data-name="Marcus Veil — Veil of Perception Tour">
+            <div class="event-date-col"><div class="event-day">18</div><div class="event-mon">Apr</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">Marcus Veil — Veil of Perception Tour</div>
+                <div class="event-meta">
+                  <span>🏛 Neptune Theatre</span>
+                  <span>📍 Seattle, WA</span>
+                  <span>🕗 8:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+
+          <a href="#" class="event-row"
+             data-city="New York" data-style="Close-up" data-period="month"
+             data-name="NY Magic Center Spring Night">
+            <div class="event-date-col"><div class="event-day">25</div><div class="event-mon">Apr</div></div>
+            <div class="event-body">
+              <div class="event-info">
+                <div class="event-name">NY Magic Center — Spring Night</div>
+                <div class="event-meta">
+                  <span>🏛 NY Magic Center</span>
+                  <span>📍 New York, NY</span>
+                  <span>🕖 7:00 PM</span>
+                </div>
+              </div>
+              <div class="event-tags"></div>
+              <button class="event-cta" onclick="event.preventDefault()">Tickets</button>
+            </div>
+          </a>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">🎩</div>
+          <div class="empty-title">No events found</div>
+          <div class="empty-sub">Try adjusting your filters to find something nearby.</div>
+        </div>
+
+      </div><!-- /list-view -->
+
+      <!-- CARD VIEW -->
+      <div id="card-view" class="hidden">
+        <div class="cards-grid">
+          <a href="#" class="event-card" data-city="Los Angeles" data-style="Mentalism" data-period="week" data-name="An Evening with Marcus Veil">
+            <div class="ec-img ec1">🎩</div>
+            <div class="ec-body"><div class="ec-date">Sat, Mar 22 · 8:00 PM</div><div class="ec-name">An Evening with Marcus Veil</div><div class="ec-meta">The Orpheum · Los Angeles</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Chicago" data-style="Comedy" data-period="week" data-name="Dorian Shade Comedy Cards">
+            <div class="ec-img ec2">🃏</div>
+            <div class="ec-body"><div class="ec-date">Sun, Mar 23 · 9:00 PM</div><div class="ec-name">Dorian Shade — Comedy &amp; Cards</div><div class="ec-meta">Chicago Magic Lounge · Chicago</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Hollywood" data-style="Stage" data-period="week" data-name="Magic Castle Weekly Showcase">
+            <div class="ec-img ec3">🎭</div>
+            <div class="ec-body"><div class="ec-date">Mon, Mar 24 · 7:30 PM</div><div class="ec-name">The Magic Castle — Weekly Showcase</div><div class="ec-meta">The Magic Castle · Hollywood</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="New York" data-style="Stage" data-period="month" data-name="Celeste Noir Shadows Light">
+            <div class="ec-img ec4">✨</div>
+            <div class="ec-body"><div class="ec-date">Fri, Mar 28 · 7:30 PM</div><div class="ec-name">Celeste Noir — Shadows &amp; Light</div><div class="ec-meta">Beacon Theatre · New York</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Seattle" data-style="Mentalism" data-period="month" data-name="Remy Cross Deceptions">
+            <div class="ec-img ec5">🪄</div>
+            <div class="ec-body"><div class="ec-date">Sat, Mar 29 · 8:00 PM</div><div class="ec-name">Remy Cross — Deceptions</div><div class="ec-meta">Neptune Theatre · Seattle</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Seattle" data-style="Escape" data-period="month" data-name="Isolde Grey Escape Experience">
+            <div class="ec-img ec6">🌟</div>
+            <div class="ec-body"><div class="ec-date">Sun, Mar 30 · 8:30 PM</div><div class="ec-name">Isolde Grey — The Escape Experience</div><div class="ec-meta">Fremont Abbey · Seattle</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Los Angeles" data-style="Close-up" data-period="month" data-name="Victor Ashby Parlour Evening">
+            <div class="ec-img ec7">🎪</div>
+            <div class="ec-body"><div class="ec-date">Mon, Mar 31 · 9:00 PM</div><div class="ec-name">Victor Ashby — Parlour Evening</div><div class="ec-meta">The Dresden · Los Angeles</div></div>
+          </a>
+          <a href="#" class="event-card" data-city="Los Angeles" data-style="Stage" data-period="month" data-name="Spring Showcase Multiple Artists">
+            <div class="ec-img ec8">🎠</div>
+            <div class="ec-body"><div class="ec-date">Sat, Apr 4 · 7:00 PM</div><div class="ec-name">The Spring Showcase</div><div class="ec-meta">The Orpheum · Los Angeles</div></div>
+          </a>
+        </div>
+      </div><!-- /card-view -->
+
+    </div><!-- /events-col -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-col">
+
+      <div class="sb-section">
+        <div class="sb-title">Performing this month</div>
+        <a href="profile.html" class="perf-row">
+          <div class="perf-ava pa1">🎩</div>
+          <div class="perf-info"><div class="perf-name">Marcus Veil</div><div class="perf-shows">3 shows · Los Angeles</div></div>
+          <div class="online-pip"></div>
+        </a>
+        <a href="#" class="perf-row">
+          <div class="perf-ava pa2">🪄</div>
+          <div class="perf-info"><div class="perf-name">Celeste Noir</div><div class="perf-shows">2 shows · New York, Chicago</div></div>
+        </a>
+        <a href="#" class="perf-row">
+          <div class="perf-ava pa3">🃏</div>
+          <div class="perf-info"><div class="perf-name">Dorian Shade</div><div class="perf-shows">1 show · Chicago</div></div>
+          <div class="online-pip"></div>
+        </a>
+        <a href="#" class="perf-row">
+          <div class="perf-ava pa4">✨</div>
+          <div class="perf-info"><div class="perf-name">Isolde Grey</div><div class="perf-shows">1 show · Seattle</div></div>
+        </a>
+        <a href="#" class="perf-row">
+          <div class="perf-ava pa5">🌟</div>
+          <div class="perf-info"><div class="perf-name">Remy Cross</div><div class="perf-shows">2 shows · Seattle</div></div>
+        </a>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-title">Browse by city</div>
+        <div class="city-row" onclick="setCityFilter('Los Angeles')"><span class="city-name">Los Angeles</span><span class="city-count">4 events</span></div>
+        <div class="city-row" onclick="setCityFilter('New York')"><span class="city-name">New York</span><span class="city-count">2 events</span></div>
+        <div class="city-row" onclick="setCityFilter('Chicago')"><span class="city-name">Chicago</span><span class="city-count">3 events</span></div>
+        <div class="city-row" onclick="setCityFilter('Seattle')"><span class="city-name">Seattle</span><span class="city-count">3 events</span></div>
+        <div class="city-row" onclick="setCityFilter('Hollywood')"><span class="city-name">Hollywood</span><span class="city-count">1 event</span></div>
+      </div>
+
+    </div><!-- /sidebar-col -->
+
+  </div><!-- /main-layout -->
+
+  <script>
+    /* ── VIEW TOGGLE ── */
+    function setView(v) {
+      document.getElementById('list-view').classList.toggle('hidden', v === 'card');
+      document.getElementById('card-view').classList.toggle('hidden', v === 'list');
+      document.getElementById('vb-list').classList.toggle('active', v === 'list');
+      document.getElementById('vb-card').classList.toggle('active', v === 'card');
+    }
+
+    /* ── CITY SHORTCUT FROM SIDEBAR ── */
+    function setCityFilter(city) {
+      document.getElementById('filter-city').value = city;
+      applyFilters();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ── FILTERS ── */
+    function applyFilters() {
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const city   = document.getElementById('filter-city').value;
+      const style  = document.getElementById('filter-style').value;
+      const period = document.getElementById('filter-date').value;
+
+      // filter list rows
+      const rows = document.querySelectorAll('.event-row');
+      let visible = 0;
+      rows.forEach(row => {
+        const rowCity   = row.dataset.city   || '';
+        const rowStyle  = row.dataset.style  || '';
+        const rowPeriod = row.dataset.period || '';
+        const rowName   = (row.dataset.name  || '').toLowerCase();
+
+        const matchCity   = !city   || rowCity   === city;
+        const matchStyle  = !style  || rowStyle  === style;
+        const matchPeriod = !period || rowPeriod === period;
+        const matchSearch = !search || rowName.includes(search);
+
+        const show = matchCity && matchStyle && matchPeriod && matchSearch;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      // filter card view cards
+      const cards = document.querySelectorAll('.event-card');
+      cards.forEach(card => {
+        const rowCity   = card.dataset.city   || '';
+        const rowStyle  = card.dataset.style  || '';
+        const rowPeriod = card.dataset.period || '';
+        const rowName   = (card.dataset.name  || '').toLowerCase();
+
+        const matchCity   = !city   || rowCity   === city;
+        const matchStyle  = !style  || rowStyle  === style;
+        const matchPeriod = !period || rowPeriod === period;
+        const matchSearch = !search || rowName.includes(search);
+
+        card.style.display = (matchCity && matchStyle && matchPeriod && matchSearch) ? '' : 'none';
+      });
+
+      // update result count
+      document.getElementById('result-count').textContent = visible + (visible === 1 ? ' event' : ' events');
+
+      // show/hide groups based on whether they have visible rows
+      ['week','march','april'].forEach(group => {
+        const groupEl = document.getElementById('group-' + group);
+        if (!groupEl) return;
+        const visibleInGroup = [...groupEl.querySelectorAll('.event-row')].filter(r => r.style.display !== 'none').length;
+        groupEl.style.display = visibleInGroup > 0 ? '' : 'none';
+      });
+
+      // empty state
+      document.getElementById('empty-state').classList.toggle('visible', visible === 0);
+    }
+  </script>
+
+</body>
+</html>

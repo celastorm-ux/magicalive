@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit an Article — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0b0e; --gold: #c9a84c; --gold-dim: #8a6f2e; --cream: #f5f0e8;
+      --cream-dim: #e8e0d0; --muted: #6b6460; --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18); --online: #3ecf8e;
+      --input-bg: rgba(255,255,255,0.04); --input-border: rgba(201,168,76,0.22);
+      --input-focus: rgba(201,168,76,0.52);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink); color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.6; overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky; top: 0; background: rgba(13,11,14,0.94);
+      backdrop-filter: blur(14px); z-index: 100;
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--cream); text-decoration: none; }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { font-size: 12px; color: var(--muted); text-decoration: none; letter-spacing: 0.07em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a.active { color: var(--cream); }
+    .breadcrumb { font-size: 12px; color: var(--muted); }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb span { color: var(--cream); }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 56px 48px 48px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .page-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: 44px; font-weight: 600; color: var(--cream); line-height: 1; margin-bottom: 14px; }
+    .page-title em { font-style: italic; color: var(--gold); }
+    .page-sub { font-size: 14px; color: var(--muted); line-height: 1.75; max-width: 520px; }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 48px;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 48px 64px;
+      align-items: start;
+    }
+
+    /* FORM */
+    .submit-form { }
+    .form-section { margin-bottom: 36px; }
+    .form-section-label {
+      font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px; padding-bottom: 10px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+    }
+    .field { margin-bottom: 18px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    label {
+      display: block; font-size: 10px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .label-opt { color: rgba(107,100,96,0.55); font-size: 9px; margin-left: 4px; }
+    input[type="text"], input[type="email"], input[type="url"], textarea, select {
+      width: 100%; background: var(--input-bg); border: 0.5px solid var(--input-border);
+      border-radius: 2px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 300; padding: 11px 14px; outline: none;
+      transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--input-focus); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { resize: vertical; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer;
+    }
+    select option { background: #1a1520; color: var(--cream); }
+    .field-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+    /* ARTICLE BODY EDITOR */
+    .editor-wrap {
+      background: var(--input-bg);
+      border: 0.5px solid var(--input-border);
+      border-radius: 2px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .editor-wrap:focus-within { border-color: var(--input-focus); }
+    .editor-toolbar {
+      display: flex; gap: 2px; padding: 8px 10px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+      flex-wrap: wrap;
+    }
+    .tb-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 12px;
+      color: var(--muted); background: none; border: none;
+      padding: 4px 9px; border-radius: 2px; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tb-btn:hover { background: rgba(201,168,76,0.1); color: var(--gold); }
+    .tb-sep { width: 0.5px; background: rgba(201,168,76,0.15); margin: 2px 4px; }
+    .editor-area {
+      width: 100%; min-height: 320px; background: none; border: none;
+      color: var(--cream); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 300; padding: 16px; outline: none;
+      line-height: 1.8; resize: vertical;
+    }
+    .editor-area::placeholder { color: var(--muted); }
+    .editor-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 14px; border-top: 0.5px solid rgba(201,168,76,0.1);
+      font-size: 11px; color: var(--muted);
+    }
+
+    /* IMAGE UPLOAD */
+    .upload-zone {
+      border: 0.5px dashed rgba(201,168,76,0.3); border-radius: 3px;
+      padding: 28px; text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-zone:hover { border-color: var(--gold); background: rgba(201,168,76,0.03); }
+    .upload-icon { font-size: 26px; margin-bottom: 8px; }
+    .upload-label { font-size: 13px; color: var(--muted); }
+    .upload-sub   { font-size: 11px; color: rgba(107,100,96,0.6); margin-top: 4px; }
+
+    /* GUIDELINES */
+    .guidelines {
+      background: rgba(201,168,76,0.05); border: 0.5px solid rgba(201,168,76,0.2);
+      border-radius: 3px; padding: 20px; margin-bottom: 18px;
+    }
+    .gl-title { font-size: 13px; font-weight: 500; color: var(--cream); margin-bottom: 12px; }
+    .gl-list  { display: flex; flex-direction: column; gap: 8px; }
+    .gl-item  { display: flex; gap: 10px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .gl-dot   { color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+
+    /* PREVIEW */
+    .preview-toggle {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px;
+    }
+    .preview-label { font-size: 12px; color: var(--muted); }
+    .toggle-track {
+      position: relative; width: 34px; height: 19px;
+      background: rgba(255,255,255,0.1); border-radius: 99px;
+      cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle-track.on { background: var(--gold); }
+    .toggle-thumb {
+      position: absolute; top: 2.5px; left: 2.5px;
+      width: 14px; height: 14px; background: white; border-radius: 50%;
+      transition: transform 0.2s; pointer-events: none;
+    }
+    .toggle-track.on .toggle-thumb { transform: translateX(15px); }
+    .article-preview {
+      display: none; background: var(--card-bg); border: 0.5px solid var(--card-border);
+      border-radius: 3px; padding: 24px; margin-bottom: 24px;
+    }
+    .article-preview.visible { display: block; animation: fadeUp 0.2s ease; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+    .preview-cat   { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .preview-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--cream); line-height: 1.2; margin-bottom: 10px; }
+    .preview-excerpt { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .preview-byline { font-size: 11px; color: var(--muted); }
+
+    /* SUBMIT ACTIONS */
+    .submit-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .btn-submit {
+      font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--ink); background: var(--gold);
+      border: none; padding: 12px 28px; border-radius: 2px; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-draft {
+      font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--gold); background: none;
+      border: 0.5px solid var(--gold-dim); padding: 12px 24px; border-radius: 2px;
+      cursor: pointer; transition: background 0.2s, color 0.2s;
+    }
+    .btn-draft:hover { background: var(--gold); color: var(--ink); }
+    .submit-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* SUCCESS STATE */
+    .success-state {
+      display: none; text-align: center;
+      background: rgba(62,207,142,0.06); border: 0.5px solid rgba(62,207,142,0.2);
+      border-radius: 3px; padding: 48px 32px;
+    }
+    .success-state.visible { display: block; animation: fadeUp 0.3s ease; }
+    .success-icon  { font-size: 40px; margin-bottom: 16px; }
+    .success-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--cream); margin-bottom: 8px; }
+    .success-sub   { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .btn-back-link {
+      font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--gold); background: none;
+      border: 0.5px solid var(--gold-dim); padding: 10px 22px; border-radius: 2px;
+      cursor: pointer; text-decoration: none; transition: background 0.2s, color 0.2s;
+    }
+    .btn-back-link:hover { background: var(--gold); color: var(--ink); }
+
+    /* SIDEBAR */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .sb-card { background: var(--card-bg); border: 0.5px solid var(--card-border); border-radius: 3px; padding: 20px; }
+    .sb-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600; color: var(--cream); margin-bottom: 14px; }
+    .sb-body  { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .cat-list { display: flex; flex-direction: column; gap: 2px; }
+    .cat-row  {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 0.5px solid rgba(255,255,255,0.04);
+      font-size: 12px; cursor: pointer; transition: opacity 0.15s;
+    }
+    .cat-row:hover { opacity: 0.8; }
+    .cat-row:last-child { border-bottom: none; }
+    .cat-name  { color: var(--cream); }
+    .cat-count { font-size: 11px; color: var(--muted); }
+    .tip-list  { display: flex; flex-direction: column; gap: 10px; }
+    .tip-item  { display: flex; gap: 10px; font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .tip-num   { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: rgba(201,168,76,0.3); min-width: 18px; line-height: 1; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .main-layout { grid-template-columns: 1fr; padding: 0 24px 48px; }
+      .sidebar { display: none; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .page-header { padding: 36px 20px 32px; }
+      .field-row { grid-template-columns: 1fr; }
+      .page-title { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html" class="active">Articles</a></li>
+    </ul>
+    <span class="breadcrumb">
+      <a href="articles.html">Articles</a> / <span>Submit</span>
+    </span>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="page-eyebrow">Share your voice</div>
+    <h1 class="page-title">Submit an <em>article</em></h1>
+    <p class="page-sub">Whether you're a magician, critic, historian, or enthusiast — if you have something worth saying about magic, we want to hear it. Pieces are reviewed within 3 business days.</p>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- FORM -->
+    <div>
+      <div id="form-wrap">
+
+        <!-- ABOUT YOU -->
+        <div class="form-section">
+          <div class="form-section-label">About you</div>
+          <div class="field-row">
+            <div>
+              <label>Your name</label>
+              <input type="text" id="author-name" placeholder="Your full or pen name">
+            </div>
+            <div>
+              <label>Email address</label>
+              <input type="email" placeholder="For editorial correspondence">
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label>Role / background <span class="label-opt">optional</span></label>
+              <input type="text" placeholder="e.g. Professional magician, Magic historian">
+            </div>
+            <div>
+              <label>Website or social <span class="label-opt">optional</span></label>
+              <input type="url" placeholder="https://yoursite.com or @handle">
+            </div>
+          </div>
+        </div>
+
+        <!-- ARTICLE DETAILS -->
+        <div class="form-section">
+          <div class="form-section-label">Article details</div>
+          <div class="field">
+            <label>Title</label>
+            <input type="text" id="article-title" placeholder="Your article headline" oninput="updatePreview()">
+          </div>
+          <div class="field-row">
+            <div>
+              <label>Category</label>
+              <select id="article-cat" onchange="updatePreview()">
+                <option value="">Select a category…</option>
+                <option value="Interview">Interview</option>
+                <option value="Technique">Technique</option>
+                <option value="Review">Review</option>
+                <option value="News">News</option>
+                <option value="History">History</option>
+                <option value="Community">Community</option>
+              </select>
+            </div>
+            <div>
+              <label>Estimated read time</label>
+              <select>
+                <option>Under 5 minutes</option>
+                <option>5–10 minutes</option>
+                <option>10–15 minutes</option>
+                <option>15+ minutes</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Short excerpt <span class="label-opt">shown in article cards</span></label>
+            <textarea rows="3" id="article-excerpt" placeholder="1–2 sentences summarising what your article is about" oninput="updatePreview()"></textarea>
+          </div>
+        </div>
+
+        <!-- ARTICLE BODY -->
+        <div class="form-section">
+          <div class="form-section-label">Article body</div>
+
+          <!-- preview toggle -->
+          <div class="preview-toggle">
+            <div class="toggle-track" id="preview-toggle" onclick="togglePreview()">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="preview-label">Preview card</span>
+          </div>
+
+          <!-- preview card -->
+          <div class="article-preview" id="article-preview">
+            <div class="preview-cat"     id="prev-cat">Category</div>
+            <div class="preview-title"   id="prev-title">Your article title will appear here</div>
+            <div class="preview-excerpt" id="prev-excerpt">Your excerpt will appear here.</div>
+            <div class="preview-byline"  id="prev-byline">By — · Magicalive</div>
+          </div>
+
+          <div class="editor-wrap">
+            <div class="editor-toolbar">
+              <button class="tb-btn" onclick="fmt('bold')"><strong>B</strong></button>
+              <button class="tb-btn" onclick="fmt('italic')"><em>I</em></button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn" onclick="insertHeading()">H2</button>
+              <button class="tb-btn" onclick="insertQuote()">❝</button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn" onclick="insertBullet()">• List</button>
+              <button class="tb-btn" onclick="insertDivider()">— Break</button>
+            </div>
+            <textarea
+              class="editor-area"
+              id="article-body"
+              placeholder="Write your article here. Use the toolbar above for basic formatting — bold, italic, headings, pull quotes, and section breaks.
+
+Tips:
+— Lead with a strong opening sentence
+— Keep paragraphs short and readable
+— Pull quotes are great for memorable lines
+— Aim for at least 500 words for a feature piece"
+            ></textarea>
+            <div class="editor-footer">
+              <span id="word-count">0 words</span>
+              <span>Plain text — formatting applied on publish</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COVER IMAGE -->
+        <div class="form-section">
+          <div class="form-section-label">Cover image <span style="font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;font-weight:300">optional but recommended</span></div>
+          <div class="upload-zone">
+            <div class="upload-icon">🖼</div>
+            <div class="upload-label">Drop a cover image here, or click to browse</div>
+            <div class="upload-sub">JPG or PNG · Min 1200×600px · Max 8MB</div>
+          </div>
+          <div class="field">
+            <label>Image caption <span class="label-opt">optional</span></label>
+            <input type="text" placeholder="e.g. Marcus Veil performing at The Orpheum — photo by A. Mercer">
+          </div>
+        </div>
+
+        <!-- GUIDELINES -->
+        <div class="guidelines">
+          <div class="gl-title">Submission guidelines</div>
+          <div class="gl-list">
+            <div class="gl-item"><span class="gl-dot">✦</span>All articles must relate to the world of magic — performance, history, technique, culture, or community</div>
+            <div class="gl-item"><span class="gl-dot">✦</span>Minimum 300 words. Features and interviews work best at 600–2000 words</div>
+            <div class="gl-item"><span class="gl-dot">✦</span>Content must be original and not published elsewhere</div>
+            <div class="gl-item"><span class="gl-dot">✦</span>Our editorial team may lightly edit for clarity, grammar, and house style</div>
+            <div class="gl-item"><span class="gl-dot">✦</span>Reviews should be of shows you actually attended — please note the date and venue</div>
+            <div class="gl-item"><span class="gl-dot">✦</span>Submissions are reviewed within 3 business days. You will receive an email either way</div>
+          </div>
+        </div>
+
+        <!-- SUBMIT ACTIONS -->
+        <div class="submit-actions">
+          <button class="btn-submit" onclick="handleSubmit()">Submit for review →</button>
+          <button class="btn-draft"  onclick="handleDraft()">Save as draft</button>
+          <p class="submit-note">By submitting you agree to our <a href="contact.html" style="color:var(--gold);text-decoration:none;">editorial terms</a>. We'll be in touch within 3 business days.</p>
+        </div>
+
+      </div><!-- /form-wrap -->
+
+      <!-- SUCCESS STATE -->
+      <div class="success-state" id="success-state">
+        <div class="success-icon">✦</div>
+        <div class="success-title">Article submitted</div>
+        <div class="success-sub">Thank you for your submission. Our editorial team will review it within 3 business days and get back to you by email. We read every piece we receive.</div>
+        <a href="articles.html" class="btn-back-link">Back to articles →</a>
+      </div>
+
+    </div><!-- /left col -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sb-card">
+        <div class="sb-title">What we publish</div>
+        <div class="cat-list">
+          <div class="cat-row"><span class="cat-name">Interviews</span><span class="cat-count">Magicians, historians, critics</span></div>
+          <div class="cat-row"><span class="cat-name">Technique</span><span class="cat-count">Methods, practice, theory</span></div>
+          <div class="cat-row"><span class="cat-name">Reviews</span><span class="cat-count">Show and book reviews</span></div>
+          <div class="cat-row"><span class="cat-name">News</span><span class="cat-count">Industry news and announcements</span></div>
+          <div class="cat-row"><span class="cat-name">History</span><span class="cat-count">Magic history and biography</span></div>
+          <div class="cat-row"><span class="cat-name">Community</span><span class="cat-count">Opinion, culture, personal essays</span></div>
+        </div>
+      </div>
+
+      <div class="sb-card">
+        <div class="sb-title">Tips for a strong submission</div>
+        <div class="tip-list">
+          <div class="tip-item"><span class="tip-num">1</span>Lead with a strong first sentence — something specific, surprising, or vivid</div>
+          <div class="tip-item"><span class="tip-num">2</span>Write for a reader who loves magic but isn't a professional — explain jargon</div>
+          <div class="tip-item"><span class="tip-num">3</span>For reviews, describe the experience as much as the tricks — atmosphere matters</div>
+          <div class="tip-item"><span class="tip-num">4</span>For technique pieces, include concrete examples and step-by-step clarity</div>
+          <div class="tip-item"><span class="tip-num">5</span>A cover image dramatically increases article engagement — include one if you can</div>
+        </div>
+      </div>
+
+      <div class="sb-card">
+        <div class="sb-title">Questions?</div>
+        <div class="sb-body" style="margin-bottom:14px;">If you have questions about submissions, editorial standards, or want to pitch an idea before writing, get in touch with our editorial team.</div>
+        <a href="contact.html" style="display:block;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--gold-dim);background:none;padding:9px;border-radius:2px;cursor:pointer;text-align:center;text-decoration:none;transition:background .2s,color .2s;" onmouseover="this.style.background='var(--gold)';this.style.color='var(--ink)'" onmouseout="this.style.background='none';this.style.color='var(--gold)'">Contact editorial ↗</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* WORD COUNT */
+    const bodyEl = document.getElementById('article-body');
+    bodyEl.addEventListener('input', () => {
+      const words = bodyEl.value.trim().split(/\s+/).filter(w => w).length;
+      document.getElementById('word-count').textContent = words + ' word' + (words !== 1 ? 's' : '');
+    });
+
+    /* PREVIEW TOGGLE */
+    let previewOn = false;
+    function togglePreview() {
+      previewOn = !previewOn;
+      document.getElementById('preview-toggle').classList.toggle('on', previewOn);
+      document.getElementById('article-preview').classList.toggle('visible', previewOn);
+      if (previewOn) updatePreview();
+    }
+
+    /* UPDATE PREVIEW */
+    function updatePreview() {
+      const title   = document.getElementById('article-title').value.trim()   || 'Your article title will appear here';
+      const excerpt = document.getElementById('article-excerpt').value.trim() || 'Your excerpt will appear here.';
+      const cat     = document.getElementById('article-cat').value            || 'Category';
+      const name    = document.getElementById('author-name').value.trim()     || '—';
+      document.getElementById('prev-title').textContent   = title;
+      document.getElementById('prev-excerpt').textContent = excerpt;
+      document.getElementById('prev-cat').textContent     = cat;
+      document.getElementById('prev-byline').textContent  = 'By ' + name + ' · Magicalive';
+    }
+
+    /* SIMPLE FORMATTING HELPERS */
+    function fmt(cmd) { document.execCommand(cmd, false, null); bodyEl.focus(); }
+    function insertHeading() {
+      const sel = window.getSelection().toString();
+      const ins = sel ? '\n\n## ' + sel + '\n\n' : '\n\n## Heading\n\n';
+      insertAtCursor(bodyEl, ins);
+    }
+    function insertQuote() {
+      const sel = window.getSelection().toString();
+      insertAtCursor(bodyEl, '\n\n"' + (sel || 'Pull quote text here') + '"\n\n');
+    }
+    function insertBullet() { insertAtCursor(bodyEl, '\n— '); }
+    function insertDivider() { insertAtCursor(bodyEl, '\n\n---\n\n'); }
+    function insertAtCursor(el, text) {
+      const s = el.selectionStart, e = el.selectionEnd;
+      el.value = el.value.slice(0, s) + text + el.value.slice(e);
+      el.selectionStart = el.selectionEnd = s + text.length;
+      el.focus();
+      el.dispatchEvent(new Event('input'));
+    }
+
+    /* SUBMIT */
+    function handleSubmit() {
+      const title = document.getElementById('article-title').value.trim();
+      const body  = document.getElementById('article-body').value.trim();
+      if (!title || !body) {
+        alert('Please add a title and article body before submitting.');
+        return;
+      }
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('success-state').classList.add('visible');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleDraft() {
+      const btn = document.querySelector('.btn-draft');
+      btn.textContent = 'Draft saved ✓';
+      btn.style.color = 'var(--online)';
+      btn.style.borderColor = 'rgba(62,207,142,0.3)';
+      setTimeout(() => {
+        btn.textContent = 'Save as draft';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>

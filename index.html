@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magicalive — The World's Magic Community</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --ink: #0d0b0e;
+      --gold: #c9a84c;
+      --gold-dim: #8a6f2e;
+      --cream: #f5f0e8;
+      --cream-dim: #e8e0d0;
+      --muted: #6b6460;
+      --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18);
+      --online: #3ecf8e;
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky;
+      top: 0;
+      background: rgba(13,11,14,0.92);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .btn-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid var(--gold-dim);
+      background: none;
+      padding: 8px 18px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: var(--gold); color: var(--ink); }
+    .btn-solid {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-solid:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 100px 48px 90px;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 60% 40%, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.025;
+      background-image: repeating-linear-gradient(45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 700px; }
+    .hero-rule { width: 40px; height: 1px; background: var(--gold); margin-bottom: 24px; }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .hero-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(48px, 7vw, 84px);
+      font-weight: 600;
+      line-height: 1.0;
+      color: var(--cream);
+      margin-bottom: 24px;
+    }
+    .hero-headline em { color: var(--gold); font-style: italic; }
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 440px;
+      line-height: 1.75;
+      margin-bottom: 36px;
+    }
+
+    /* ── SEARCH ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid rgba(201,168,76,0.25);
+      border-radius: 2px;
+      padding: 4px 4px 4px 18px;
+      max-width: 500px;
+      margin-bottom: 36px;
+    }
+    .search-bar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      flex: 1;
+      min-width: 0;
+    }
+    .search-bar input::placeholder { color: var(--muted); }
+    .search-btn {
+      background: var(--gold);
+      border: none;
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 1px;
+      cursor: pointer;
+    }
+
+    .hero-actions { display: flex; gap: 12px; align-items: center; margin-bottom: 64px; }
+
+    /* ── STATS ── */
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      padding-top: 40px;
+      border-top: 0.5px solid rgba(201,168,76,0.15);
+      flex-wrap: wrap;
+    }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── SECTIONS ── */
+    .section { padding: 64px 48px; }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .section-link {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .section-link:hover { text-decoration: underline; }
+    .divider-line { height: 0.5px; background: rgba(201,168,76,0.1); margin: 0 48px; }
+
+    /* ── MAGICIAN CARDS ── */
+    .magician-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+    .mag-card {
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .mag-card:hover { border-color: rgba(201,168,76,0.5); transform: translateY(-3px); }
+    .mag-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      position: relative;
+    }
+    .c1 { background: linear-gradient(135deg, #1a1020 0%, #2d1f3d 100%); }
+    .c2 { background: linear-gradient(135deg, #0f1a20 0%, #1a3040 100%); }
+    .c3 { background: linear-gradient(135deg, #1a1510 0%, #3d2a0f 100%); }
+    .c4 { background: linear-gradient(135deg, #101a15 0%, #0f3020 100%); }
+    .online-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(13,11,14,0.8);
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 10px;
+      color: var(--online);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--online); flex-shrink: 0; }
+    .mag-card-body { padding: 14px 16px 16px; }
+    .mag-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 2px;
+    }
+    .mag-location { font-size: 11px; color: var(--muted); margin-bottom: 9px; }
+    .mag-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .mag-tag {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 0.5px solid rgba(138,111,46,0.4);
+      padding: 2px 8px;
+      border-radius: 1px;
+    }
+    .mag-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 0.5px solid rgba(255,255,255,0.06);
+    }
+    .mag-rating { font-size: 13px; color: var(--gold); }
+    .mag-reviews { font-size: 11px; color: var(--muted); }
+
+    /* ── EVENTS ── */
+    .event-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: rgba(201,168,76,0.1);
+      border: 0.5px solid rgba(201,168,76,0.15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .event-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--card-bg);
+      padding: 18px 24px;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .event-row:hover { background: #1c1820; }
+    .event-date { text-align: center; min-width: 44px; }
+    .event-day {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .event-mon {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .event-divider { width: 0.5px; height: 36px; background: rgba(201,168,76,0.2); flex-shrink: 0; }
+    .event-info { flex: 1; min-width: 0; }
+    .event-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--cream);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .event-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .event-tag {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 1px;
+      white-space: nowrap;
+    }
+    .tag-soon { background: rgba(201,168,76,0.1); color: var(--gold); border: 0.5px solid rgba(201,168,76,0.3); }
+    .tag-new  { background: rgba(62,207,142,0.1); color: var(--online); border: 0.5px solid rgba(62,207,142,0.3); }
+    .tag-sold { background: rgba(226,75,74,0.1); color: #e24b4a; border: 0.5px solid rgba(226,75,74,0.3); }
+
+    /* ── ARTICLES ── */
+    .article-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+    .article-card {
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      text-decoration: none;
+    }
+    .article-card:hover { border-color: rgba(201,168,76,0.45); }
+    .article-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    .a1 { background: linear-gradient(135deg, #1a1020 0%, #2d0f2d 100%); }
+    .a2 { background: linear-gradient(135deg, #0a1520 0%, #102030 100%); }
+    .a3 { background: linear-gradient(135deg, #1a1508 0%, #2d2510 100%); }
+    .article-body { padding: 16px; }
+    .article-cat {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+    .article-card.featured .article-title { font-size: 20px; }
+    .article-byline { font-size: 11px; color: var(--muted); }
+
+    /* ── VENUES ── */
+    .venue-strip { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+    .venue-strip::-webkit-scrollbar { display: none; }
+    .venue-card {
+      flex-shrink: 0;
+      width: 200px;
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      text-decoration: none;
+    }
+    .venue-card:hover { border-color: rgba(201,168,76,0.45); }
+    .venue-icon { font-size: 24px; margin-bottom: 10px; }
+    .venue-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+    .venue-loc { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+    .venue-shows { font-size: 11px; color: var(--gold); }
+
+    /* ── FOOTER CTA ── */
+    .footer-cta {
+      margin: 0 48px 64px;
+      border: 0.5px solid rgba(201,168,76,0.25);
+      border-radius: 3px;
+      padding: 52px 52px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      background: linear-gradient(90deg, rgba(201,168,76,0.05) 0%, transparent 100%);
+      flex-wrap: wrap;
+    }
+    .footer-cta-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+    .footer-cta-sub { font-size: 13px; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 0.5px solid rgba(201,168,76,0.1);
+      padding: 32px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .footer-logo em { color: var(--gold); font-style: italic; }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
+    .footer-copy { font-size: 12px; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 60px 20px 50px; }
+      .section { padding: 48px 20px; }
+      .divider-line { margin: 0 20px; }
+      .magician-grid { grid-template-columns: 1fr 1fr; }
+      .article-grid { grid-template-columns: 1fr; }
+      .footer-cta { flex-direction: column; margin: 0 20px 48px; padding: 32px 24px; }
+      .hero-stats { gap: 28px; }
+      footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+      .footer-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="#">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+    </ul>
+    <div class="nav-right">
+        <a href="signin.html" class="btn-ghost">Sign in</a>
+      <a href="create-profile.html" class="btn-solid">Create profile</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-pattern"></div>
+    <div class="hero-content">
+      <div class="hero-rule"></div>
+      <p class="hero-eyebrow">The world's magic community</p>
+      <h1 class="hero-headline">Where <em>magic</em><br>finds its audience</h1>
+      <p class="hero-sub">Discover magicians, browse upcoming shows, and explore the venues that keep the art alive. The definitive hub for performers and fans alike.</p>
+      <div class="search-bar">
+        <input type="text" placeholder="Search magicians, events, venues…">
+        <button class="search-btn">Search</button>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-solid" style="padding: 11px 24px; font-size: 13px;">List your profile</button>
+        <button class="btn-ghost" style="padding: 11px 24px; font-size: 13px;">Browse magicians</button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">2,400+</div>
+          <div class="stat-label">Magicians</div>
+        </div>
+        <div>
+          <div class="stat-num">840</div>
+          <div class="stat-label">Upcoming events</div>
+        </div>
+        <div>
+          <div class="stat-num">320</div>
+          <div class="stat-label">Active venues</div>
+        </div>
+        <div>
+          <div class="stat-num">18k</div>
+          <div class="stat-label">Community members</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider-line"></div>
+
+  <!-- ── FEATURED MAGICIANS ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Featured magicians</h2>
+      <a href="#" class="section-link">View all →</a>
+    </div>
+    <div class="magician-grid">
+
+      <a href="profile.html" class="mag-card">
+        <div class="mag-card-img c1">
+          🎩
+          <div class="online-badge"><div class="online-dot"></div>Online</div>
+        </div>
+        <div class="mag-card-body">
+          <div class="mag-name">Marcus Veil</div>
+          <div class="mag-location">Los Angeles, CA</div>
+          <div class="mag-tags"><span class="mag-tag">Mentalism</span><span class="mag-tag">Close-up</span></div>
+          <div class="mag-footer"><span class="mag-rating">★ 4.9</span><span class="mag-reviews">142 reviews</span></div>
+        </div>
+      </a>
+
+      <a href="#" class="mag-card">
+        <div class="mag-card-img c2">🪄</div>
+        <div class="mag-card-body">
+          <div class="mag-name">Celeste Noir</div>
+          <div class="mag-location">New York, NY</div>
+          <div class="mag-tags"><span class="mag-tag">Stage</span><span class="mag-tag">Illusion</span></div>
+          <div class="mag-footer"><span class="mag-rating">★ 4.8</span><span class="mag-reviews">98 reviews</span></div>
+        </div>
+      </a>
+
+      <a href="#" class="mag-card">
+        <div class="mag-card-img c3">
+          🃏
+          <div class="online-badge"><div class="online-dot"></div>Online</div>
+        </div>
+        <div class="mag-card-body">
+          <div class="mag-name">Dorian Shade</div>
+          <div class="mag-location">Chicago, IL</div>
+          <div class="mag-tags"><span class="mag-tag">Card magic</span><span class="mag-tag">Comedy</span></div>
+          <div class="mag-footer"><span class="mag-rating">★ 4.7</span><span class="mag-reviews">211 reviews</span></div>
+        </div>
+      </a>
+
+      <a href="#" class="mag-card">
+        <div class="mag-card-img c4">✨</div>
+        <div class="mag-card-body">
+          <div class="mag-name">Isolde Grey</div>
+          <div class="mag-location">Seattle, WA</div>
+          <div class="mag-tags"><span class="mag-tag">Escape</span><span class="mag-tag">Stage</span></div>
+          <div class="mag-footer"><span class="mag-rating">★ 5.0</span><span class="mag-reviews">64 reviews</span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider-line"></div>
+
+  <!-- ── UPCOMING EVENTS ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Upcoming events</h2>
+      <a href="events.html" class="section-link">All events →</a>
+    </div>
+    <div class="event-list">
+
+      <a href="#" class="event-row">
+        <div class="event-date"><div class="event-day">22</div><div class="event-mon">Mar</div></div>
+        <div class="event-divider"></div>
+        <div class="event-info">
+          <div class="event-name">An Evening with Marcus Veil</div>
+          <div class="event-meta">The Orpheum Theatre · Los Angeles, CA · 8:00 PM</div>
+        </div>
+        <span class="event-tag tag-soon">This week</span>
+      </a>
+
+      <a href="#" class="event-row">
+        <div class="event-date"><div class="event-day">28</div><div class="event-mon">Mar</div></div>
+        <div class="event-divider"></div>
+        <div class="event-info">
+          <div class="event-name">Celeste Noir — Shadows & Light</div>
+          <div class="event-meta">Beacon Theatre · New York, NY · 7:30 PM</div>
+        </div>
+        <span class="event-tag tag-new">New</span>
+      </a>
+
+      <a href="#" class="event-row">
+        <div class="event-date"><div class="event-day">24</div><div class="event-mon">Mar</div></div>
+        <div class="event-divider"></div>
+        <div class="event-info">
+          <div class="event-name">The Magic Castle — Weekly Showcase</div>
+          <div class="event-meta">The Magic Castle · Hollywood, CA · 7:30 PM</div>
+        </div>
+        <span class="event-tag tag-sold">Sold out</span>
+      </a>
+
+      <a href="#" class="event-row">
+        <div class="event-date"><div class="event-day">04</div><div class="event-mon">Apr</div></div>
+        <div class="event-divider"></div>
+        <div class="event-info">
+          <div class="event-name">Dorian Shade — Comedy & Cards</div>
+          <div class="event-meta">Chicago Magic Lounge · Chicago, IL · 9:00 PM</div>
+        </div>
+        <span class="event-tag tag-new">New</span>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider-line"></div>
+
+  <!-- ── ARTICLES ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">From the community</h2>
+      <a href="articles.html" class="section-link">All articles →</a>
+    </div>
+    <div class="article-grid">
+
+      <a href="#" class="article-card featured">
+        <div class="article-img a1">🎭</div>
+        <div class="article-body">
+          <div class="article-cat">Interview</div>
+          <div class="article-title">Marcus Veil on why mentalism is the most intimate form of magic</div>
+          <div class="article-byline">By Elena Cross · March 14, 2026</div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card">
+        <div class="article-img a2">🪄</div>
+        <div class="article-body">
+          <div class="article-cat">Technique</div>
+          <div class="article-title">The lost art of misdirection in modern stage shows</div>
+          <div class="article-byline">By R. Ashby · March 10, 2026</div>
+        </div>
+      </a>
+
+      <a href="#" class="article-card">
+        <div class="article-img a3">🃏</div>
+        <div class="article-body">
+          <div class="article-cat">Review</div>
+          <div class="article-title">Shadows & Light reviewed — Celeste Noir at her peak</div>
+          <div class="article-byline">By M. Holt · March 8, 2026</div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <div class="divider-line"></div>
+
+  <!-- ── VENUES ── -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Active venues</h2>
+      <a href="venues.html" class="section-link">All venues →</a>
+    </div>
+    <div class="venue-strip">
+      <a href="#" class="venue-card"><div class="venue-icon">🏛️</div><div class="venue-name">The Orpheum</div><div class="venue-loc">Los Angeles, CA</div><div class="venue-shows">3 upcoming shows</div></a>
+      <a href="#" class="venue-card"><div class="venue-icon">🎪</div><div class="venue-name">Beacon Theatre</div><div class="venue-loc">New York, NY</div><div class="venue-shows">5 upcoming shows</div></a>
+      <a href="#" class="venue-card"><div class="venue-icon">🎩</div><div class="venue-name">Chicago Magic Lounge</div><div class="venue-loc">Chicago, IL</div><div class="venue-shows">8 upcoming shows</div></a>
+      <a href="#" class="venue-card"><div class="venue-icon">🌟</div><div class="venue-name">Neptune Theatre</div><div class="venue-loc">Seattle, WA</div><div class="venue-shows">2 upcoming shows</div></a>
+      <a href="#" class="venue-card"><div class="venue-icon">🎭</div><div class="venue-name">The Magic Castle</div><div class="venue-loc">Hollywood, CA</div><div class="venue-shows">12 upcoming shows</div></a>
+    </div>
+  </section>
+
+  <!-- ── FOOTER CTA ── -->
+  <div class="footer-cta">
+    <div>
+      <div class="footer-cta-title">Are you a magician?</div>
+      <div class="footer-cta-sub">Create your profile in minutes. Reach fans, list your shows, build your reputation.</div>
+    </div>
+    <button class="btn-solid" style="padding: 14px 32px; font-size: 13px;">Create your profile →</button>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-logo">Magic<em>alive</em></span>
+    <ul class="footer-links">
+      <li><a href="#">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 Magicalive. All rights reserved.</span>
+  </footer>
+
+</body>
+</html>

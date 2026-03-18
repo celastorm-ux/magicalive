@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcus Veil — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── VARIABLES ── */
+    :root {
+      --ink: #0d0b0e;
+      --gold: #c9a84c;
+      --gold-dim: #8a6f2e;
+      --cream: #f5f0e8;
+      --cream-dim: #e8e0d0;
+      --muted: #6b6460;
+      --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18);
+      --online: #3ecf8e;
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.2);
+      position: sticky;
+      top: 0;
+      background: rgba(13,11,14,0.94);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--cream);
+      text-decoration: none;
+    }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .breadcrumb { font-size: 12px; color: var(--muted); }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb span { color: var(--cream); }
+
+    /* ── BUTTONS ── */
+    .btn-ghost {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid var(--gold-dim);
+      background: none;
+      padding: 8px 18px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { background: var(--gold); color: var(--ink); }
+    .btn-solid {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold);
+      border: none;
+      padding: 8px 20px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-solid:hover { opacity: 0.85; }
+
+    /* ── BANNER ── */
+    .banner {
+      height: 230px;
+      background: linear-gradient(135deg, #1a1020 0%, #2d1f3d 50%, #1a0f0a 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .banner-pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.055;
+      background-image: repeating-linear-gradient(45deg, var(--gold) 0, var(--gold) 1px, transparent 0, transparent 50%);
+      background-size: 26px 26px;
+    }
+    .banner-gradient {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 110px;
+      background: linear-gradient(to bottom, transparent, var(--ink));
+    }
+
+    /* ── PROFILE HEADER ── */
+    .profile-header { padding: 0 48px 32px; position: relative; }
+    .avatar-wrap {
+      position: relative;
+      display: inline-block;
+      margin-top: -52px;
+      margin-bottom: 18px;
+    }
+    .avatar {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2d1f3d, #534AB7);
+      border: 3px solid var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+    }
+    .online-ring {
+      position: absolute;
+      bottom: 5px; right: 5px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--online);
+      border: 2.5px solid var(--ink);
+    }
+    .profile-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .profile-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .badge-verified {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(201,168,76,0.12);
+      color: var(--gold);
+      border: 0.5px solid rgba(201,168,76,0.3);
+      padding: 3px 10px;
+      border-radius: 1px;
+    }
+    .badge-online {
+      font-size: 11px;
+      background: rgba(62,207,142,0.1);
+      color: var(--online);
+      border: 0.5px solid rgba(62,207,142,0.3);
+      padding: 3px 10px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .online-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--online); }
+    .profile-handle { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .profile-location { font-size: 13px; color: var(--muted); margin-bottom: 0; }
+    .profile-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      gap: 0;
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 24px 48px 0;
+    }
+    .stat-cell {
+      flex: 1;
+      padding: 16px 20px;
+      background: var(--card-bg);
+      border-right: 0.5px solid var(--card-border);
+      text-align: center;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--cream);
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+      padding: 0 48px;
+      margin-top: 32px;
+      overflow-x: auto;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 1.5px solid transparent;
+      margin-bottom: -0.5px;
+      white-space: nowrap;
+      transition: color 0.2s;
+      user-select: none;
+    }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab:hover:not(.active) { color: var(--cream-dim); }
+
+    /* ── MAIN LAYOUT ── */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 32px;
+      padding: 32px 48px;
+      align-items: start;
+    }
+
+    /* ── PANELS ── */
+    .panel { display: none; }
+    .panel.active { display: block; animation: fadeUp 0.2s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION HEADS ── */
+    .sec-head {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 0.5px solid rgba(201,168,76,0.12);
+    }
+
+    /* ── SPECIALTY TAGS ── */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .spec-tag {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      border: 0.5px solid rgba(138,111,46,0.4);
+      padding: 4px 13px;
+      border-radius: 1px;
+    }
+
+    /* ── BIO ── */
+    .bio-text {
+      font-size: 14px;
+      color: var(--cream-dim);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    /* ── MEDIA GRID ── */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .media-thumb {
+      aspect-ratio: 16/9;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      border: 0.5px solid var(--card-border);
+      transition: opacity 0.2s, border-color 0.2s;
+    }
+    .media-thumb:hover { opacity: 0.8; border-color: rgba(201,168,76,0.4); }
+    .mt1 { background: linear-gradient(135deg, #1a1020, #2d1f3d); }
+    .mt2 { background: linear-gradient(135deg, #0f1a20, #1a3040); }
+    .mt3 { background: linear-gradient(135deg, #1a1510, #3d2a0f); }
+    .mt4 { background: linear-gradient(135deg, #101a15, #0f3020); }
+    .mt5 { background: linear-gradient(135deg, #1a1020, #1a0f20); }
+    .mt6 { background: linear-gradient(135deg, #0d1520, #152030); }
+
+    /* ── UPCOMING SHOWS ── */
+    .show-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: rgba(201,168,76,0.08);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .show-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .show-row:hover { background: #1c1820; }
+    .show-date { text-align: center; min-width: 36px; }
+    .show-day {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .show-mon {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .show-divider { width: 0.5px; height: 28px; background: rgba(201,168,76,0.2); }
+    .show-info { flex: 1; min-width: 0; }
+    .show-name { font-size: 13px; font-weight: 500; color: var(--cream); }
+    .show-venue { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .show-btn {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 0.5px solid rgba(201,168,76,0.3);
+      background: none;
+      padding: 5px 13px;
+      border-radius: 1px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .show-btn:hover { background: var(--gold); color: var(--ink); }
+
+    /* ── REVIEWS ── */
+    .review-list { display: flex; flex-direction: column; gap: 14px; }
+    .review-card {
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      padding: 16px 18px;
+    }
+    .review-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .review-author { font-size: 13px; font-weight: 500; color: var(--cream); }
+    .review-stars { font-size: 12px; color: var(--gold); margin-left: 8px; }
+    .review-date { font-size: 11px; color: var(--muted); }
+    .review-body { font-size: 13px; color: var(--cream-dim); line-height: 1.65; }
+    .review-show { font-size: 11px; color: var(--muted); margin-top: 8px; font-style: italic; }
+
+    /* ── PAST SHOWS (history tab) ── */
+    .history-list { display: flex; flex-direction: column; gap: 1px; background: rgba(201,168,76,0.08); border: 0.5px solid var(--card-border); border-radius: 3px; overflow: hidden; }
+    .history-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--card-bg);
+      padding: 13px 18px;
+    }
+    .history-date { font-size: 12px; color: var(--muted); min-width: 90px; }
+    .history-name { font-size: 13px; color: var(--cream-dim); flex: 1; }
+    .history-venue { font-size: 11px; color: var(--muted); text-align: right; }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 18px; }
+    .sb-card {
+      background: var(--card-bg);
+      border: 0.5px solid var(--card-border);
+      border-radius: 3px;
+      padding: 20px;
+    }
+    .sb-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 14px;
+    }
+    .cred-list { display: flex; flex-direction: column; gap: 10px; }
+    .cred-item { display: flex; gap: 10px; align-items: flex-start; }
+    .cred-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-top: 6px; flex-shrink: 0; }
+    .cred-text { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+    .info-list { display: flex; flex-direction: column; }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 12px;
+      padding: 9px 0;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-label { color: var(--muted); }
+    .info-val { color: var(--cream); text-align: right; }
+    .info-val.online { color: var(--online); }
+    .social-row { display: flex; gap: 7px; flex-wrap: wrap; }
+    .social-btn {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 0.5px solid rgba(255,255,255,0.1);
+      background: none;
+      padding: 6px 12px;
+      border-radius: 1px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .social-btn:hover { color: var(--cream); border-color: rgba(201,168,76,0.35); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .profile-header { padding: 0 20px 24px; }
+      .stats-bar { margin: 24px 20px 0; flex-wrap: wrap; }
+      .stat-cell { min-width: 50%; }
+      .tabs { padding: 0 20px; }
+      .main-layout { grid-template-columns: 1fr; padding: 24px 20px; }
+      .sidebar { display: none; }
+      .media-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <ul class="nav-links">
+      <li><a href="#">Magicians</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="venues.html">Venues</a></li>
+      <li><a href="articles.html">Articles</a></li>
+    </ul>
+    <span class="breadcrumb">
+      <a href="#">Magicians</a> / <span>Marcus Veil</span>
+    </span>
+  </nav>
+
+  <!-- ── BANNER ── -->
+  <div class="banner">
+    <div class="banner-pattern"></div>
+    <div class="banner-gradient"></div>
+  </div>
+
+  <!-- ── PROFILE HEADER ── -->
+  <div class="profile-header">
+    <div class="avatar-wrap">
+      <div class="avatar">🎩</div>
+      <div class="online-ring"></div>
+    </div>
+    <div class="profile-top">
+      <div>
+        <div class="profile-name">
+          Marcus Veil
+          <span class="badge-verified">Verified</span>
+          <span class="badge-online"><span class="online-pip"></span>Online now</span>
+        </div>
+        <div class="profile-handle">@marcusveil</div>
+        <div class="profile-location">Los Angeles, CA · Member since 2021</div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-ghost">Follow</button>
+        <button class="btn-solid">Book for event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STATS BAR ── -->
+  <div class="stats-bar">
+    <div class="stat-cell"><div class="stat-num">4.9</div><div class="stat-label">Rating</div></div>
+    <div class="stat-cell"><div class="stat-num">142</div><div class="stat-label">Reviews</div></div>
+    <div class="stat-cell"><div class="stat-num">2.4k</div><div class="stat-label">Followers</div></div>
+    <div class="stat-cell"><div class="stat-num">3</div><div class="stat-label">Upcoming shows</div></div>
+    <div class="stat-cell"><div class="stat-num">12</div><div class="stat-label">Years active</div></div>
+  </div>
+
+  <!-- ── TABS ── -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('about', this)">About</div>
+    <div class="tab" onclick="showTab('media', this)">Media</div>
+    <div class="tab" onclick="showTab('shows', this)">Upcoming shows</div>
+    <div class="tab" onclick="showTab('reviews', this)">Reviews</div>
+    <div class="tab" onclick="showTab('history', this)">Show history</div>
+  </div>
+
+  <!-- ── MAIN LAYOUT ── -->
+  <div class="main-layout">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- ABOUT TAB -->
+      <div class="panel active" id="tab-about">
+        <div class="tag-row">
+          <span class="spec-tag">Mentalism</span>
+          <span class="spec-tag">Close-up magic</span>
+          <span class="spec-tag">Stage illusions</span>
+          <span class="spec-tag">Comedy magic</span>
+          <span class="spec-tag">Corporate events</span>
+        </div>
+        <div class="sec-head">Biography</div>
+        <p class="bio-text">Marcus Veil is a Los Angeles-based magician with over twelve years of professional experience. Specializing in psychological illusions and sleight of hand, Marcus has performed at venues ranging from intimate jazz bars to 2,000-seat theaters across the United States.</p>
+        <p class="bio-text">His style blends classic close-up magic with contemporary mentalism — creating shows that feel less like tricks and more like shared experiences. Off stage, Marcus teaches workshops on the psychology of perception and has been a member of the Society of American Magicians since 2015.</p>
+      </div>
+
+      <!-- MEDIA TAB -->
+      <div class="panel" id="tab-media">
+        <div class="sec-head">Photos & videos</div>
+        <div class="media-grid">
+          <div class="media-thumb mt1">🎩</div>
+          <div class="media-thumb mt2">🃏</div>
+          <div class="media-thumb mt3">✨</div>
+          <div class="media-thumb mt4">🪄</div>
+          <div class="media-thumb mt5">🎭</div>
+          <div class="media-thumb mt6">🌟</div>
+        </div>
+      </div>
+
+      <!-- SHOWS TAB -->
+      <div class="panel" id="tab-shows">
+        <div class="sec-head">Upcoming shows</div>
+        <div class="show-list">
+          <div class="show-row">
+            <div class="show-date"><div class="show-day">22</div><div class="show-mon">Mar</div></div>
+            <div class="show-divider"></div>
+            <div class="show-info">
+              <div class="show-name">An Evening with Marcus Veil</div>
+              <div class="show-venue">The Orpheum · Los Angeles, CA · 8:00 PM</div>
+            </div>
+            <button class="show-btn">Tickets</button>
+          </div>
+          <div class="show-row">
+            <div class="show-date"><div class="show-day">14</div><div class="show-mon">Apr</div></div>
+            <div class="show-divider"></div>
+            <div class="show-info">
+              <div class="show-name">Mind Games — Private Residency</div>
+              <div class="show-venue">The Dresden · Los Angeles, CA · 9:30 PM</div>
+            </div>
+            <button class="show-btn">Tickets</button>
+          </div>
+          <div class="show-row">
+            <div class="show-date"><div class="show-day">02</div><div class="show-mon">May</div></div>
+            <div class="show-divider"></div>
+            <div class="show-info">
+              <div class="show-name">Veil of Perception — Chicago Tour</div>
+              <div class="show-venue">Chicago Magic Lounge · Chicago, IL · 8:00 PM</div>
+            </div>
+            <button class="show-btn">Tickets</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS TAB -->
+      <div class="panel" id="tab-reviews">
+        <div class="sec-head">Reviews</div>
+        <div class="review-list">
+          <div class="review-card">
+            <div class="review-top">
+              <div>
+                <span class="review-author">Sarah K.</span>
+                <span class="review-stars">★★★★★</span>
+              </div>
+              <span class="review-date">March 10, 2026</span>
+            </div>
+            <div class="review-body">Genuinely one of the most unsettling and delightful performances I've ever seen. He had the entire room in the palm of his hand for two hours straight. The mentalism segment left me questioning what I'd said aloud all evening.</div>
+            <div class="review-show">Attended: An Evening with Marcus Veil · The Orpheum</div>
+          </div>
+          <div class="review-card">
+            <div class="review-top">
+              <div>
+                <span class="review-author">Daniel M.</span>
+                <span class="review-stars">★★★★★</span>
+              </div>
+              <span class="review-date">Feb 28, 2026</span>
+            </div>
+            <div class="review-body">Hired Marcus for our company's annual gala. Professional, responsive, and utterly captivating. Our 300 guests were completely riveted. Would book again without hesitation.</div>
+            <div class="review-show">Corporate event · Santa Monica, CA</div>
+          </div>
+          <div class="review-card">
+            <div class="review-top">
+              <div>
+                <span class="review-author">Priya N.</span>
+                <span class="review-stars">★★★★★</span>
+              </div>
+              <span class="review-date">Jan 15, 2026</span>
+            </div>
+            <div class="review-body">I've seen a lot of magic shows but nothing like this. The combination of close-up work and mentalism is extraordinary. He guessed something I hadn't told anyone. Still thinking about it weeks later.</div>
+            <div class="review-show">Attended: Mind Games Residency · The Dresden</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div class="panel" id="tab-history">
+        <div class="sec-head">Show history</div>
+        <div class="history-list">
+          <div class="history-row">
+            <div class="history-date">Feb 18, 2026</div>
+            <div class="history-name">Mind Games — February Residency</div>
+            <div class="history-venue">The Dresden, LA</div>
+          </div>
+          <div class="history-row">
+            <div class="history-date">Jan 30, 2026</div>
+            <div class="history-name">An Evening with Marcus Veil</div>
+            <div class="history-venue">The Orpheum, LA</div>
+          </div>
+          <div class="history-row">
+            <div class="history-date">Dec 12, 2025</div>
+            <div class="history-name">Holiday Gala — Private Event</div>
+            <div class="history-venue">Beverly Hills, CA</div>
+          </div>
+          <div class="history-row">
+            <div class="history-date">Nov 5, 2025</div>
+            <div class="history-name">Veil of Perception — Tour Night 3</div>
+            <div class="history-venue">Chicago Magic Lounge</div>
+          </div>
+          <div class="history-row">
+            <div class="history-date">Oct 22, 2025</div>
+            <div class="history-name">Veil of Perception — Tour Night 2</div>
+            <div class="history-venue">Neptune Theatre, Seattle</div>
+          </div>
+          <div class="history-row">
+            <div class="history-date">Oct 8, 2025</div>
+            <div class="history-name">Veil of Perception — Tour Night 1</div>
+            <div class="history-venue">Beacon Theatre, New York</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /left column -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <div class="sb-card">
+        <div class="sb-title">Credentials</div>
+        <div class="cred-list">
+          <div class="cred-item"><div class="cred-dot"></div><div class="cred-text">SAM — Society of American Magicians, Member since 2015</div></div>
+          <div class="cred-item"><div class="cred-dot"></div><div class="cred-text">Winner — Pacific Coast Magic Championship 2021</div></div>
+          <div class="cred-item"><div class="cred-dot"></div><div class="cred-text">Featured in LA Weekly "Best of Magic 2023"</div></div>
+          <div class="cred-item"><div class="cred-dot"></div><div class="cred-text">IBM Ring 22 — International Brotherhood of Magicians</div></div>
+          <div class="cred-item"><div class="cred-dot"></div><div class="cred-text">Appeared on NBC's "America's Got Talent" Season 17</div></div>
+        </div>
+      </div>
+
+      <div class="sb-card">
+        <div class="sb-title">Details</div>
+        <div class="info-list">
+          <div class="info-row"><span class="info-label">Location</span><span class="info-val">Los Angeles, CA</span></div>
+          <div class="info-row"><span class="info-label">Age</span><span class="info-val">34</span></div>
+          <div class="info-row"><span class="info-label">Years active</span><span class="info-val">12</span></div>
+          <div class="info-row"><span class="info-label">Specialty</span><span class="info-val">Mentalism</span></div>
+          <div class="info-row"><span class="info-label">Available for</span><span class="info-val">Corporate, Private, Theater</span></div>
+          <div class="info-row"><span class="info-label">Last active</span><span class="info-val online">Online now</span></div>
+        </div>
+      </div>
+
+      <div class="sb-card">
+        <div class="sb-title">Find me online</div>
+        <div class="social-row">
+          <button class="social-btn">Instagram</button>
+          <button class="social-btn">YouTube</button>
+          <button class="social-btn">TikTok</button>
+          <button class="social-btn">Website</button>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+
+  </div><!-- /main-layout -->
+
+  <script>
+    function showTab(id, el) {
+      // hide all panels
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      // deactivate all tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      // show chosen panel and activate tab
+      document.getElementById('tab-' + id).classList.add('active');
+      el.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
