@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Profile — Magicalive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0b0e; --gold: #c9a84c; --gold-dim: #8a6f2e; --cream: #f5f0e8;
+      --cream-dim: #e8e0d0; --muted: #6b6460; --card-bg: #151217;
+      --card-border: rgba(201,168,76,0.18); --online: #3ecf8e;
+      --input-bg: rgba(255,255,255,0.04); --input-border: rgba(201,168,76,0.22);
+      --input-focus: rgba(201,168,76,0.52);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink); color: var(--cream);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* TOP BAR */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; border-bottom: 0.5px solid rgba(201,168,76,0.15); flex-shrink: 0; }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--cream); text-decoration: none; }
+    .nav-logo em { color: var(--gold); font-style: italic; }
+    .save-exit { font-size: 12px; color: var(--muted); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
+    .save-exit:hover { color: var(--cream); }
+
+    /* PROGRESS */
+    .progress-wrap { padding: 20px 48px 0; flex-shrink: 0; }
+    .step-labels { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .step-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); transition: color 0.3s; }
+    .step-label.active { color: var(--gold); }
+    .step-label.done   { color: rgba(201,168,76,0.45); }
+    .progress-track { height: 2px; background: rgba(255,255,255,0.07); border-radius: 1px; overflow: hidden; }
+    .progress-fill  { height: 100%; background: var(--gold); border-radius: 1px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+
+    /* BODY */
+    .ob-body { flex: 1; padding: 40px 48px; max-width: 640px; width: 100%; margin: 0 auto; }
+
+    /* STEP HEADER */
+    .step-eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .step-title { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 600; color: var(--cream); margin-bottom: 8px; line-height: 1.1; }
+    .step-title em { font-style: italic; color: var(--gold); }
+    .step-sub { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 32px; }
+
+    /* TYPE CARDS */
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+    .type-card {
+      background: var(--card-bg); border: 0.5px solid var(--card-border);
+      border-radius: 3px; padding: 28px 20px; text-align: center;
+      cursor: pointer; transition: all 0.2s; user-select: none;
+    }
+    .type-card:hover { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.03); }
+    .type-card.selected { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+    .type-icon { font-size: 36px; margin-bottom: 14px; }
+    .type-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--cream); margin-bottom: 6px; }
+    .type-card.selected .type-name { color: var(--gold); }
+    .type-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .type-perks { margin-top: 14px; display: flex; flex-direction: column; gap: 5px; }
+    .type-perk { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; text-align: left; }
+    .perk-dot  { color: var(--gold); flex-shrink: 0; }
+    .type-card.selected .type-perk { color: var(--cream-dim); }
+
+    /* FORM ELEMENTS */
+    .field     { margin-bottom: 18px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    label { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .label-opt { color: rgba(107,100,96,0.55); font-size: 9px; margin-left: 4px; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], textarea, select {
+      width: 100%; background: var(--input-bg); border: 0.5px solid var(--input-border);
+      border-radius: 2px; color: var(--cream); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 300; padding: 11px 14px; outline: none;
+      transition: border-color 0.2s; -webkit-appearance: none; appearance: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--input-focus); }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    textarea { resize: vertical; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6460' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer;
+    }
+    select option { background: #1a1520; color: var(--cream); }
+    .field-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+    /* TAG PICKER */
+    .tag-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-opt { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 14px; border-radius: 1px; border: 0.5px solid rgba(201,168,76,0.22); color: var(--muted); cursor: pointer; transition: all 0.15s; user-select: none; }
+    .tag-opt:hover { border-color: rgba(201,168,76,0.5); color: var(--cream); }
+    .tag-opt.selected { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold); }
+
+    /* UPLOAD */
+    .upload-zone { border: 0.5px dashed rgba(201,168,76,0.3); border-radius: 3px; padding: 32px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; margin-bottom: 18px; }
+    .upload-zone:hover { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+    .upload-icon  { font-size: 26px; margin-bottom: 10px; }
+    .upload-label { font-size: 13px; color: var(--muted); }
+    .upload-sub   { font-size: 11px; color: rgba(107,100,96,0.6); margin-top: 4px; }
+
+    /* CREDENTIALS */
+    .cred-inputs { display: flex; flex-direction: column; gap: 10px; }
+    .cred-row    { display: flex; gap: 8px; align-items: center; }
+    .cred-row input { flex: 1; }
+    .cred-remove { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.2s; flex-shrink: 0; }
+    .cred-remove:hover { color: #e24b4a; }
+    .add-cred-btn { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); background: none; border: 0.5px dashed rgba(201,168,76,0.3); border-radius: 2px; padding: 9px 16px; cursor: pointer; width: 100%; margin-top: 6px; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, background 0.2s; }
+    .add-cred-btn:hover { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+
+    /* PREVIEW */
+    .preview-card { background: var(--card-bg); border: 0.5px solid var(--card-border); border-radius: 3px; overflow: hidden; margin-bottom: 20px; }
+    .preview-banner { height: 64px; background: linear-gradient(135deg,#1a1020,#2d1f3d); }
+    .preview-body   { padding: 14px 18px 18px; }
+    .preview-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg,#2d1f3d,#534AB7); border: 2.5px solid var(--card-bg); margin-top: -32px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .preview-name   { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--cream); margin-bottom: 2px; }
+    .preview-loc    { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .preview-tags   { display: flex; flex-wrap: wrap; gap: 5px; }
+    .preview-tag    { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-dim); border: 0.5px solid rgba(138,111,46,0.4); padding: 2px 9px; border-radius: 1px; }
+    .complete-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--online); background: rgba(62,207,142,0.08); border: 0.5px solid rgba(62,207,142,0.2); border-radius: 2px; padding: 10px 14px; margin-bottom: 16px; }
+    .terms-note     { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .terms-note a   { color: var(--gold); text-decoration: none; }
+
+    /* SUCCESS */
+    .success-screen { text-align: center; padding: 40px 0; }
+    .success-icon  { font-size: 40px; margin-bottom: 16px; }
+    .success-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--cream); margin-bottom: 8px; }
+    .success-sub   { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.7; }
+    .btn-home { display: inline-block; font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); background: var(--gold); padding: 11px 28px; border-radius: 2px; text-decoration: none; }
+
+    /* STEPS */
+    .step { display: none; }
+    .step.active { display: block; animation: fadeIn 0.22s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+
+    /* FOOTER */
+    .ob-footer { padding: 20px 48px 28px; border-top: 0.5px solid rgba(201,168,76,0.12); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .btn-back    { font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: none; cursor: pointer; transition: color 0.2s; }
+    .btn-back:hover { color: var(--cream); }
+    .step-counter { font-size: 12px; color: var(--muted); }
+    .btn-next    { font-family: 'DM Sans', sans-serif; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--gold); border: none; padding: 11px 28px; border-radius: 2px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-next:hover { opacity: 0.85; }
+    .btn-publish { font-family: 'DM Sans', sans-serif; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--gold); border: none; padding: 12px 32px; border-radius: 2px; cursor: pointer; }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .top-bar, .progress-wrap, .ob-body, .ob-footer { padding-left: 20px; padding-right: 20px; }
+      .type-grid { grid-template-columns: 1fr; }
+      .field-row { grid-template-columns: 1fr; }
+      .step-labels { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <a href="index.html" class="nav-logo">Magic<em>alive</em></a>
+    <button class="save-exit">Save &amp; exit</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="step-labels" id="mag-labels" style="display:none">
+      <span class="step-label active" id="lbl-0">Account</span>
+      <span class="step-label" id="lbl-1">Identity</span>
+      <span class="step-label" id="lbl-2">Style</span>
+      <span class="step-label" id="lbl-3">Credentials</span>
+      <span class="step-label" id="lbl-4">Media</span>
+      <span class="step-label" id="lbl-5">Publish</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="ob-body">
+
+    <!-- ── STEP 0 — WHO ARE YOU ── -->
+    <div class="step active" id="step-0">
+      <div class="step-eyebrow">Welcome to Magicalive</div>
+      <h2 class="step-title">Who are <em>you?</em></h2>
+      <p class="step-sub">Pick the option that fits. Each path is tailored to what you need — you can always update your preferences later.</p>
+      <div class="type-grid">
+
+        <div class="type-card" id="card-magician" onclick="selectType('magician')">
+          <div class="type-icon">🎩</div>
+          <div class="type-name">Magician</div>
+          <div class="type-desc">Build a public profile, list your shows, and get discovered by fans and event organisers</div>
+          <div class="type-perks">
+            <div class="type-perk"><span class="perk-dot">✦</span>Public profile page</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Post upcoming shows</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Appear in the directory</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Collect fan reviews</div>
+          </div>
+        </div>
+
+        <div class="type-card" id="card-fan" onclick="selectType('fan')">
+          <div class="type-icon">👥</div>
+          <div class="type-name">Fan</div>
+          <div class="type-desc">Discover magicians, browse events near you, follow your favourites, and leave reviews</div>
+          <div class="type-perks">
+            <div class="type-perk"><span class="perk-dot">✦</span>Follow magicians</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Save upcoming events</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Write reviews</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Submit articles</div>
+          </div>
+        </div>
+
+        <div class="type-card" id="card-venue" onclick="selectType('venue')">
+          <div class="type-icon">🏛️</div>
+          <div class="type-name">Venue</div>
+          <div class="type-desc">List your space in the directory and connect with magicians looking for a stage</div>
+          <div class="type-perks">
+            <div class="type-perk"><span class="perk-dot">✦</span>Venue profile page</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Appear on the map</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Post hosted shows</div>
+            <div class="type-perk"><span class="perk-dot">✦</span>Connect with performers</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── MAGICIAN STEPS ── -->
+    <div class="step" id="step-m1">
+      <div class="step-eyebrow">Step 1 of 6 — Magician</div>
+      <h2 class="step-title">Create your <em>account</em></h2>
+      <p class="step-sub">You'll use this to manage your profile, post shows, and connect with fans.</p>
+      <div class="field"><label>Display name</label><input type="text" placeholder="The name you perform under" id="display-name"></div>
+      <div class="field"><label>Email address</label><input type="email" placeholder="your@email.com"></div>
+      <div class="field-row">
+        <div><label>Password</label><input type="password" placeholder="Min. 8 characters"></div>
+        <div><label>Confirm password</label><input type="password" placeholder="Repeat password"></div>
+      </div>
+    </div>
+
+    <div class="step" id="step-m2">
+      <div class="step-eyebrow">Step 2 of 6 — Magician</div>
+      <h2 class="step-title">Your <em>identity</em></h2>
+      <p class="step-sub">Tell the community who you are and where you perform.</p>
+      <div class="field"><label>Handle / username</label><input type="text" placeholder="@yourhandle — no spaces" id="handle"><div class="field-hint">Your profile will live at magicalive.com/@yourhandle</div></div>
+      <div class="field-row">
+        <div><label>City / Region</label><input type="text" placeholder="e.g. Los Angeles, CA" id="city"></div>
+        <div><label>Age <span class="label-opt">optional</span></label><input type="number" placeholder="e.g. 34" min="16" max="99"></div>
+      </div>
+      <div class="field"><label>Short bio</label><input type="text" placeholder="One sentence — e.g. Mentalist based in LA"></div>
+      <div class="field"><label>Full bio</label><textarea rows="4" placeholder="Your background, style, and what makes your shows unique…"></textarea></div>
+    </div>
+
+    <div class="step" id="step-m3">
+      <div class="step-eyebrow">Step 3 of 6 — Magician</div>
+      <h2 class="step-title">Your <em>style</em></h2>
+      <p class="step-sub">Select all that apply. These tags help fans and event organisers find you.</p>
+      <div class="field"><label>Specialty tags</label>
+        <div class="tag-picker">
+          <div class="tag-opt" onclick="toggleTag(this)">Close-up magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Stage illusions</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Mentalism</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Card magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Coin magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Escape artistry</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Comedy magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Children's magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Corporate events</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Parlor magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Street magic</div>
+          <div class="tag-opt" onclick="toggleTag(this)">Virtual shows</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:24px"><label>Available for</label>
+        <select><option>Select event types…</option><option>Corporate events</option><option>Private parties</option><option>Theater / stage</option><option>Weddings</option><option>Festivals</option><option>All of the above</option></select>
+      </div>
+    </div>
+
+    <div class="step" id="step-m4">
+      <div class="step-eyebrow">Step 4 of 6 — Magician</div>
+      <h2 class="step-title">Credentials &amp; <em>achievements</em></h2>
+      <p class="step-sub">Awards, memberships, press mentions, notable clients. These build trust and set you apart.</p>
+      <div class="cred-inputs" id="cred-inputs">
+        <div class="cred-row"><input type="text" placeholder="e.g. SAM Member since 2015"><button class="cred-remove" onclick="removeCred(this)">×</button></div>
+        <div class="cred-row"><input type="text" placeholder="e.g. Winner — Pacific Coast Magic Championship 2021"><button class="cred-remove" onclick="removeCred(this)">×</button></div>
+      </div>
+      <button class="add-cred-btn" onclick="addCred()">+ Add another credential</button>
+    </div>
+
+    <div class="step" id="step-m5">
+      <div class="step-eyebrow">Step 5 of 6 — Magician</div>
+      <h2 class="step-title">Photos &amp; <em>media</em></h2>
+      <p class="step-sub">Upload your best shots and a showreel. Profiles with media get 3× more views.</p>
+      <div class="upload-zone"><div class="upload-icon">🎞</div><div class="upload-label">Drop photos or videos here, or click to browse</div><div class="upload-sub">JPG, PNG, MP4 · Max 50MB · Up to 12 files</div></div>
+      <div class="field"><label>YouTube or Vimeo showreel <span class="label-opt">optional</span></label><input type="url" placeholder="https://youtube.com/watch?v=…"></div>
+      <div class="field-row">
+        <div><label>Instagram <span class="label-opt">optional</span></label><input type="text" placeholder="@handle"></div>
+        <div><label>TikTok <span class="label-opt">optional</span></label><input type="text" placeholder="@handle"></div>
+      </div>
+    </div>
+
+    <div class="step" id="step-m6">
+      <div class="step-eyebrow">Step 6 of 6 — Magician</div>
+      <h2 class="step-title">Ready to go <em>live?</em></h2>
+      <p class="step-sub">Here's a preview of how you'll appear in the directory. You can edit everything after publishing.</p>
+      <div class="complete-badge"><span>✓</span> Profile complete — all key sections filled in</div>
+      <div class="preview-card">
+        <div class="preview-banner"></div>
+        <div class="preview-body">
+          <div class="preview-avatar">🎩</div>
+          <div class="preview-name" id="preview-name">Your name</div>
+          <div class="preview-loc"  id="preview-loc">Your location</div>
+          <div class="preview-tags" id="preview-tags"><span class="preview-tag">Your tags</span></div>
+        </div>
+      </div>
+      <p class="terms-note">By publishing you agree to our <a href="contact.html">Terms of Service</a> and <a href="contact.html">Community Guidelines</a>.</p>
+    </div>
+
+    <!-- ── FAN STEP ── -->
+    <div class="step" id="step-fan">
+      <div class="step-eyebrow">Fan account</div>
+      <h2 class="step-title">Join the <em>community</em></h2>
+      <p class="step-sub">Create your free account to follow magicians, save events, and leave reviews.</p>
+      <div id="fan-form">
+        <div class="field"><label>Your name</label><input type="text" placeholder="Your name"></div>
+        <div class="field"><label>Email address</label><input type="email" placeholder="your@email.com"></div>
+        <div class="field-row">
+          <div><label>Password</label><input type="password" placeholder="Min. 8 characters"></div>
+          <div><label>Confirm password</label><input type="password" placeholder="Repeat password"></div>
+        </div>
+        <button class="btn-next" style="margin-top:4px" onclick="completeFan()">Create fan account →</button>
+      </div>
+      <div id="fan-success" style="display:none" class="success-screen">
+        <div class="success-icon">✦</div>
+        <div class="success-title">Welcome to Magicalive</div>
+        <div class="success-sub">Your fan account is ready. Start discovering magicians, saving events, and building your community.</div>
+        <a href="index.html" class="btn-home">Explore Magicalive →</a>
+      </div>
+    </div>
+
+    <!-- ── VENUE STEP ── -->
+    <div class="step" id="step-venue">
+      <div class="step-eyebrow">Venue account</div>
+      <h2 class="step-title">List your <em>venue</em></h2>
+      <p class="step-sub">Tell us about your space and we'll get you listed in the Magicalive venue directory within 5 business days.</p>
+      <div class="field"><label>Venue name</label><input type="text" placeholder="e.g. The Orpheum Theatre"></div>
+      <div class="field-row">
+        <div><label>City</label><input type="text" placeholder="e.g. Los Angeles, CA"></div>
+        <div><label>Capacity</label><input type="number" placeholder="e.g. 400"></div>
+      </div>
+      <div class="field"><label>Venue type</label>
+        <select><option>Select type…</option><option>Theater</option><option>Lounge / bar</option><option>Private club</option><option>Hotel</option><option>Festival venue</option><option>Other</option></select>
+      </div>
+      <div class="field"><label>Contact email</label><input type="email" placeholder="your@venue.com"></div>
+      <div class="field"><label>Brief description</label><textarea rows="3" placeholder="What makes your venue great for magic performances?"></textarea></div>
+      <button class="btn-next" style="margin-top:4px" onclick="completeVenue()">Submit venue →</button>
+    </div>
+
+  </div><!-- /ob-body -->
+
+  <!-- FOOTER -->
+  <div class="ob-footer" id="ob-footer">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="visibility:hidden">← Back</button>
+    <span class="step-counter" id="step-counter"></span>
+    <button class="btn-next" id="btn-next" onclick="nextStep()">Continue →</button>
+  </div>
+
+  <script>
+    let accountType = null;
+    let mStep = 0;
+    const TOTAL = 6;
+    const WIDTHS = ['0%','8%','25%','42%','58%','75%','92%'];
+
+    function show(id) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function selectType(type) {
+      accountType = type;
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('card-' + type).classList.add('selected');
+      setTimeout(() => {
+        if (type === 'magician') beginMagician();
+        if (type === 'fan')      beginFan();
+        if (type === 'venue')    beginVenue();
+      }, 200);
+    }
+
+    /* MAGICIAN */
+    function beginMagician() {
+      document.getElementById('mag-labels').style.display = 'flex';
+      document.getElementById('btn-next').style.display = '';
+      goToM(1);
+    }
+
+    function goToM(n) {
+      show('step-m' + n);
+      mStep = n;
+      document.getElementById('progress-fill').style.width = WIDTHS[n];
+      document.getElementById('step-counter').textContent = n + ' of ' + TOTAL;
+      document.getElementById('btn-back').style.visibility = 'visible';
+      document.querySelectorAll('#mag-labels .step-label').forEach((l, i) => {
+        l.classList.toggle('active', i === n - 1);
+        l.classList.toggle('done',   i < n - 1);
+      });
+      const btnNext = document.getElementById('btn-next');
+      let pub = document.getElementById('btn-pub');
+      if (n === TOTAL) {
+        btnNext.style.display = 'none';
+        if (!pub) {
+          pub = document.createElement('button');
+          pub.id = 'btn-pub'; pub.className = 'btn-publish';
+          pub.textContent = 'Publish my profile ✦';
+          pub.onclick = () => window.location.href = 'profile.html';
+          document.getElementById('ob-footer').appendChild(pub);
+        }
+        pub.style.display = '';
+        updatePreview();
+      } else {
+        btnNext.style.display = '';
+        if (pub) pub.style.display = 'none';
+      }
+    }
+
+    function nextStep() { if (mStep < TOTAL) goToM(mStep + 1); }
+
+    function goBack() {
+      if (accountType === 'magician' && mStep > 1) { goToM(mStep - 1); return; }
+      /* back to type selector */
+      accountType = null; mStep = 0;
+      document.getElementById('mag-labels').style.display = 'none';
+      document.getElementById('progress-fill').style.width = '0%';
+      document.getElementById('step-counter').textContent = '';
+      document.getElementById('btn-back').style.visibility = 'hidden';
+      document.getElementById('btn-next').style.display = '';
+      const pub = document.getElementById('btn-pub');
+      if (pub) pub.style.display = 'none';
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+      show('step-0');
+    }
+
+    /* FAN */
+    function beginFan() {
+      document.getElementById('mag-labels').style.display = 'none';
+      document.getElementById('progress-fill').style.width = '50%';
+      document.getElementById('step-counter').textContent = 'Fan account';
+      document.getElementById('btn-back').style.visibility = 'visible';
+      document.getElementById('btn-next').style.display = 'none';
+      show('step-fan');
+    }
+
+    function completeFan() {
+      document.getElementById('fan-form').style.display = 'none';
+      document.getElementById('fan-success').style.display = 'block';
+      document.getElementById('progress-fill').style.width = '100%';
+      document.getElementById('ob-footer').style.display = 'none';
+    }
+
+    /* VENUE */
+    function beginVenue() {
+      document.getElementById('mag-labels').style.display = 'none';
+      document.getElementById('progress-fill').style.width = '50%';
+      document.getElementById('step-counter').textContent = 'Venue listing';
+      document.getElementById('btn-back').style.visibility = 'visible';
+      document.getElementById('btn-next').style.display = 'none';
+      show('step-venue');
+    }
+
+    function completeVenue() {
+      alert("Thank you! We'll review your venue and add it to the directory within 5 business days.");
+      window.location.href = 'venues.html';
+    }
+
+    /* HELPERS */
+    function toggleTag(el) { el.classList.toggle('selected'); }
+    function addCred() {
+      const wrap = document.getElementById('cred-inputs');
+      const row  = document.createElement('div'); row.className = 'cred-row';
+      row.innerHTML = '<input type="text" placeholder="Add a credential…"><button class="cred-remove" onclick="removeCred(this)">×</button>';
+      wrap.appendChild(row); row.querySelector('input').focus();
+    }
+    function removeCred(btn) {
+      if (document.querySelectorAll('.cred-row').length > 1) btn.parentElement.remove();
+    }
+    function updatePreview() {
+      const name = document.getElementById('display-name')?.value.trim() || 'Your name';
+      const city = document.getElementById('city')?.value.trim()         || 'Your location';
+      const tags = [...document.querySelectorAll('.tag-opt.selected')].map(t => t.textContent);
+      document.getElementById('preview-name').textContent = name;
+      document.getElementById('preview-loc').textContent  = city;
+      const wrap = document.getElementById('preview-tags');
+      wrap.innerHTML = '';
+      (tags.length ? tags.slice(0,4) : ['Your tags']).forEach(t => {
+        const s = document.createElement('span'); s.className = 'preview-tag'; s.textContent = t; wrap.appendChild(s);
+      });
+    }
+  </script>
+
+</body>
+</html>
